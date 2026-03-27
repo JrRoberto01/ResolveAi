@@ -8,16 +8,17 @@
     "scheme": "resolveai",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/images/logo.png"
+      "icon": "./assets/images/logo.png",
+      "bundleIdentifier": "com.anonymous.resolveAi"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/logo.png",
-        "backgroundImage": "./assets/images/logo.png",
         "monochromeImage": "./assets/images/logo.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.resolveAi"
     },
     "web": {
       "output": "static",
@@ -29,9 +30,17 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#FFFFFF",
+          "image": "./src/assets/splash-icon.png",
+          "resizeMode": "contain",
+          "imageWidth": 105,
           "android": {
-            "image": "./assets/images/logo.png",
-            "imageWidth": 76
+            "image": "./src/assets/splash-icon.png",
+            "resizeMode": "contain",
+            "imageWidth": 105
+          },
+          "ios": {
+            "image": "./src/assets/splash-icon.png",
+            "imageWidth": 105
           }
         }
       ],
