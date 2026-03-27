@@ -41,6 +41,8 @@ export default function TabLayout() {
                     tabBarIcon: () => <FontAwesome5 name="user" size={24} color={colors.darkGrey} />,
                 }}
             />
+            <Tabs.Screen name="add" options={{ href: null }} />
+            <Tabs.Screen name="list" options={{ href: null }} />
         </Tabs>
     )
 }
