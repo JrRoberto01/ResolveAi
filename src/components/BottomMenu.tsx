@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../style/colors';
 import { spacing } from '../style/spacing';
 
@@ -16,10 +16,10 @@ export function BottomMenu() {
     <View style={styles.container}>
       {tabs.map((tab, index) => (
         <TouchableOpacity key={index} style={styles.tab}>
-          <Ionicons 
-            name={tab.icon as any} 
-            size={24} 
-            color={tab.active ? colors.primary : colors.textSecondary} 
+          <Ionicons
+            name={tab.icon as any}
+            size={24}
+            color={tab.active ? colors.primary : colors.textSecondary}
           />
           <Text style={[styles.text, tab.active && styles.textActive]}>
             {tab.name}

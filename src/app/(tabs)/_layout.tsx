@@ -1,5 +1,5 @@
 import colors from '@/style/colors';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {
@@ -11,7 +11,7 @@ export default function TabLayout() {
                     tabBarActiveTintColor: `${colors.darkBlue}`,
                     tabBarInactiveTintColor: `${colors.darkGrey}`,
                     headerShown: false,
-                    tabBarIcon: () => <FontAwesome5 name="home" size={24} color={colors.darkGrey} />,
+                    tabBarIcon: () => <Ionicons name="list" size={24} color={colors.darkGrey} />,
                 }}
             />
             <Tabs.Screen name="ranking"
@@ -20,7 +20,7 @@ export default function TabLayout() {
                     tabBarActiveTintColor: `${colors.darkBlue}`,
                     tabBarInactiveTintColor: `${colors.darkGrey}`,
                     headerShown: false,
-                    tabBarIcon: () => <FontAwesome5 name="trophy" size={24} color={colors.darkGrey} />,
+                    tabBarIcon: () => <Ionicons name="trophy-outline" size={24} color={colors.darkGrey} />,
                 }}
             />
             <Tabs.Screen name="favorites"
@@ -29,7 +29,7 @@ export default function TabLayout() {
                     tabBarActiveTintColor: `${colors.darkBlue}`,
                     tabBarInactiveTintColor: `${colors.darkGrey}`,
                     headerShown: false,
-                    tabBarIcon: () => <FontAwesome5 name="star" size={24} color={colors.darkGrey} />,
+                    tabBarIcon: () => <Ionicons name="heart-outline" size={24} color={colors.darkGrey} />,
                 }}
             />
             <Tabs.Screen name="profile"
@@ -38,7 +38,7 @@ export default function TabLayout() {
                     tabBarActiveTintColor: `${colors.darkBlue}`,
                     tabBarInactiveTintColor: `${colors.darkGrey}`,
                     headerShown: false,
-                    tabBarIcon: () => <FontAwesome5 name="user" size={24} color={colors.darkGrey} />,
+                    tabBarIcon: () => <Ionicons name="person-outline" size={24} color={colors.darkGrey} />,
                 }}
             />
             <Tabs.Screen name="add" options={{ href: null }} />

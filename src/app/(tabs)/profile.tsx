@@ -28,7 +28,6 @@ export default function Profile() {
                     <StatCard number={userData.stats.supports} label="APOIOS" />
                 </View>
 
-                {/* Minhas Ocorrências */}
                 <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>Minhas Ocorrências</Text>
@@ -48,7 +47,6 @@ export default function Profile() {
                     ))}
                 </View>
 
-                {/* Configurações */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitleOptions}>Configurações</Text>
 
@@ -65,7 +63,6 @@ export default function Profile() {
                     </View>
                 </View>
 
-                {/* Spacer bottom*/}
                 <View style={{ height: 30 }} />
             </ScrollView>
         </SafeAreaView>
