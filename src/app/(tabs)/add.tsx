@@ -1,16 +1,17 @@
-import "react-native-get-random-values";
 import React, { useState } from 'react';
-import { View, ScrollView, Alert } from "react-native";
+import { Alert, ScrollView, View, Modal } from "react-native";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from 'uuid';
+import { AnonymousSwitch } from '../../components/AnonymousSwitch';
+import { Button } from '../../components/Button';
+import { Camera } from '../../components/Camera';
+import { CategorySelector } from '../../components/CategorySelector';
 import { Header } from '../../components/Header';
 import { Input } from '../../components/Input';
-import { Button } from '../../components/Button';
-import { AnonymousSwitch } from '../../components/AnonymousSwitch';
-import { CategorySelector } from '../../components/CategorySelector';
 import { LocationPicker } from '../../components/LocationPicker';
 import { PhotoUploadBox } from '../../components/PhotoUploadBox';
 import { colors } from '../../style/colors';
 import { spacing } from '../../style/spacing';
-import { v4 as uuidv4 } from 'uuid';
 
 export default function AddItem(props: any) {
     const isEditing = !!props.initialData;
@@ -20,12 +21,18 @@ export default function AddItem(props: any) {
     const [category, setCategory] = useState(isEditing ? props.initialData.category : 'Buraco na via');
     const [isAnonymous, setIsAnonymous] = useState(isEditing ? props.initialData.anonymous : false);
     const [location, setLocation] = useState<any>(isEditing ? props.initialData.location : null);
-
+    const [cameraOpen, setCameraOpen] = useState(false);
+    const [photos, setPhotos] = useState<string[]>(isEditing && props.initialData.photos ? props.initialData.photos : []);
     const categories = ['Buraco na via', 'Iluminação pública', 'Lixo / Entulho', 'Vazamento', 'Alagamento'];
+
+    const handlePhotoCapture = (uri: string) => {
+        setPhotos((prev) => [...prev, uri]);
+        setCameraOpen(false);
+    };
 
     const handleSave = () => {
         if (!title.trim()) return;
-        
+
         if (isEditing) {
             props.onEditItem({
                 ...props.initialData,
@@ -33,7 +40,9 @@ export default function AddItem(props: any) {
                 description,
                 category,
                 anonymous: isAnonymous,
-                location: location || props.initialData.location
+                location: location || props.initialData.location,
+                photos: photos,
+                imageUrl: photos.length > 0 ? { uri: photos[0] } : props.initialData.imageUrl
             });
         } else {
             const newItem = {
@@ -46,7 +55,9 @@ export default function AddItem(props: any) {
                 likes: 0,
                 comments: 0,
                 timeAgo: 'Agora mesmo',
-                status: 'EM ANÁLISE'
+                status: 'EM ANÁLISE',
+                photos: photos,
+                imageUrl: photos.length > 0 ? { uri: photos[0] } : undefined
             };
             props.onAddItem(newItem);
         }
@@ -58,8 +69,8 @@ export default function AddItem(props: any) {
             "Tem certeza que deseja apagar esta ocorrência?",
             [
                 { text: "Cancelar", style: "cancel" },
-                { 
-                    text: "Excluir", 
+                {
+                    text: "Excluir",
                     style: "destructive",
                     onPress: () => props.onDeleteItem(props.initialData.id)
                 }
@@ -70,22 +81,22 @@ export default function AddItem(props: any) {
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>
             <Header title={isEditing ? "Editar Ocorrência" : "Nova Ocorrência"} showBack onBack={props.onBack} />
-            
+
             <ScrollView contentContainerStyle={{ padding: spacing.md }}>
-                
-                <AnonymousSwitch 
+
+                <AnonymousSwitch
                     value={isAnonymous}
                     onValueChange={setIsAnonymous}
                 />
 
-                <Input 
+                <Input
                     label="Título do Problema"
                     placeholder="Ex: Buraco no meio da rua"
                     value={title}
                     onChangeText={setTitle}
                 />
 
-                <Input 
+                <Input
                     label="Descrição Detalhada"
                     placeholder="Descreva o que está acontecendo e como isso afeta a vizinhança..."
                     value={description}
@@ -93,36 +104,47 @@ export default function AddItem(props: any) {
                     multiline
                 />
 
-                <CategorySelector 
+                <CategorySelector
                     label="CATEGORIA"
                     categories={categories}
                     activeCategory={category}
                     onSelect={setCategory}
                 />
 
-                <PhotoUploadBox label="EVIDÊNCIAS (FOTOS)" />
-
-                <LocationPicker 
-                    onLocationSelect={setLocation} 
-                    initialLocation={location} 
+                <PhotoUploadBox
+                    label="EVIDÊNCIAS (FOTOS)"
+                    onPress={() => setCameraOpen(true)}
+                    photos={photos}
                 />
 
-                <Button 
-                    title={isEditing ? "Salvar alterações" : "Publicar ocorrência"} 
-                    onPress={handleSave} 
-                    style={{ marginTop: spacing.md, marginBottom: isEditing ? spacing.md : spacing.xxl }} 
+                <LocationPicker
+                    onLocationSelect={setLocation}
+                    initialLocation={location}
+                />
+
+                <Button
+                    title={isEditing ? "Salvar alterações" : "Publicar ocorrência"}
+                    onPress={handleSave}
+                    style={{ marginTop: spacing.md, marginBottom: isEditing ? spacing.md : spacing.xxl }}
                 />
 
                 {isEditing && (
-                    <Button 
-                        title="Excluir Ocorrência" 
+                    <Button
+                        title="Excluir Ocorrência"
                         variant="danger"
-                        onPress={handleDelete} 
-                        style={{ marginBottom: spacing.xxl }} 
+                        onPress={handleDelete}
+                        style={{ marginBottom: spacing.xxl }}
                     />
                 )}
 
             </ScrollView>
+
+            <Modal visible={cameraOpen} animationType="slide">
+                <Camera
+                    onCapture={handlePhotoCapture}
+                    onClose={() => setCameraOpen(false)}
+                />
+            </Modal>
         </View>
     );
 }
