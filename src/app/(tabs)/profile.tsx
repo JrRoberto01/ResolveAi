@@ -3,13 +3,55 @@ import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileInfo } from '@/components/profile/ProfileInfo';
 import { SettingsOption } from '@/components/profile/SettingsOption';
 import { StatCard } from '@/components/profile/StatCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../../style/profile_style';
-import { occurrences, settingsOptions, userData } from './profile.data';
+import { occurrences, userData } from './profile.data';
 
 export default function Profile() {
+    // const { user, loading, refreshing, error} = getUserData();
+    const { signOut } = useAuth();
+
+    // if (loading) {
+    //     return <ActivityIndicator style={{ flex: 1 }} size="large" />;
+    // }
+
+    // if (error) {
+    //     return <Text>Erro: {error}</Text>;
+    // }
+
+    async function handleSignOut() {
+        await signOut();
+        router.replace("/(auth)/sign-in");
+    }
+
+    const settingsOptions = [
+        {
+            icon: 'user',
+            text: 'Editar Perfil',
+            showDivider: true,
+        },
+        {
+            icon: 'bell',
+            text: 'Notificações',
+            showDivider: true,
+        },
+        {
+            icon: 'lock',
+            text: 'Privacidade',
+            showDivider: true,
+        },
+        {
+            icon: 'sign-out-alt',
+            text: 'Sair',
+            isDanger: true,
+            onPress: handleSignOut,
+        },
+    ];
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -58,6 +100,7 @@ export default function Profile() {
                                 text={option.text}
                                 showDivider={option.showDivider}
                                 isDanger={option.isDanger}
+                                onPress={option.onPress}
                             />
                         ))}
                     </View>

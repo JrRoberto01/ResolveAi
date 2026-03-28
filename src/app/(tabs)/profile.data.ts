@@ -25,10 +25,3 @@ export const occurrences = [
         status: "Resolvido",
     },
 ];
-
-export const settingsOptions = [
-    { icon: "user", text: "Editar Perfil", showDivider: true },
-    { icon: "bell", text: "Notificações", showDivider: true },
-    { icon: "lock", text: "Privacidade", showDivider: true },
-    { icon: "sign-out-alt", text: "Sair", isDanger: true },
-];

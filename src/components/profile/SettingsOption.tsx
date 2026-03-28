@@ -1,18 +1,19 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import colors from '@/style/colors';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type SettingsOptionProps = {
     icon: string;
     text: string;
     isDanger?: boolean;
     showDivider?: boolean;
+    onPress?: () => void;
 };
 
-export function SettingsOption({ icon, text, isDanger, showDivider = false }: SettingsOptionProps) {
+export function SettingsOption({ icon, text, isDanger, showDivider = false, onPress }: SettingsOptionProps) {
     return (
         <>
-            <TouchableOpacity style={styles.optionRow}>
+            <TouchableOpacity style={styles.optionRow} onPress={onPress}>
                 <View style={styles.optionLeft}>
                     <FontAwesome5 
                         name={icon} 
