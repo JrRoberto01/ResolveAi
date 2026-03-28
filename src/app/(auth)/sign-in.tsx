@@ -2,9 +2,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import colors from "@/style/colors";
 import { globalStyles } from "@/style/global";
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Link, router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -38,22 +38,43 @@ const hiddenModalState: ModalState = {
 
 export default function Signin() {
     const {
+        isAuthenticated,
         signIn,
         signInWithBiometrics,
         enableBiometricLogin,
         isBiometricAvailable,
         isBiometricEnabled,
+        pauseAuthRedirect,
+        resumeAuthRedirect,
+        shouldOfferBiometricEnrollment,
     } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [modal, setModal] = useState<ModalState>(hiddenModalState);
+    const [hasAttemptedAutoBiometric, setHasAttemptedAutoBiometric] = useState(false);
 
     const biometricDisabled = useMemo(
         () => loading || !isBiometricAvailable || !isBiometricEnabled,
         [loading, isBiometricAvailable, isBiometricEnabled],
     );
+
+    useEffect(() => {
+        if (
+            loading ||
+            modal.visible ||
+            isAuthenticated ||
+            hasAttemptedAutoBiometric ||
+            !isBiometricAvailable ||
+            !isBiometricEnabled
+        ) {
+            return;
+        }
+
+        setHasAttemptedAutoBiometric(true);
+        void handleBiometricSignIn();
+    }, [loading, modal.visible, isAuthenticated, hasAttemptedAutoBiometric, isBiometricAvailable, isBiometricEnabled]);
 
     function closeModal() {
         setModal(hiddenModalState);
@@ -61,10 +82,12 @@ export default function Signin() {
 
     function navigateToTabs() {
         closeModal();
+        resumeAuthRedirect();
         router.replace("/(tabs)");
     }
 
     function showErrorModal(message: string) {
+        resumeAuthRedirect();
         setModal({
             visible: true,
             title: "Algo deu errado",
@@ -77,16 +100,18 @@ export default function Signin() {
         });
     }
 
-    function askToEnableBiometrics() {
-        if (!isBiometricAvailable || isBiometricEnabled) {
-            router.replace("/(tabs)");
+    async function askToEnableBiometrics() {
+        const shouldOffer = await shouldOfferBiometricEnrollment();
+
+        if (!shouldOffer) {
+            navigateToTabs();
             return;
         }
 
         setModal({
             visible: true,
             title: "Ativar login com biometria?",
-            message: "Nos proximos acessos voce podera entrar usando a biometria do dispositivo.",
+            message: "Nos próximos acessos você poderá entrar usando a biometria do dispositivo.",
             variant: "info",
             primaryAction: {
                 label: "Ativar",
@@ -94,7 +119,10 @@ export default function Signin() {
                     void (async () => {
                         try {
                             closeModal();
-                            const enabled = await enableBiometricLogin();
+                            const enabled = await enableBiometricLogin({
+                                email: email.trim(),
+                                password,
+                            });
 
                             if (enabled) {
                                 setModal({
@@ -110,15 +138,13 @@ export default function Signin() {
                                 return;
                             }
 
-                            router.replace("/(tabs)");
+                            navigateToTabs();
                         } catch (err: any) {
-                            const msg =
-                                err?.message ||
-                                "Nao foi possivel ativar o login com biometria.";
+                            const msg = err?.message || "Não foi possível ativar o login com biometria.";
 
                             setModal({
                                 visible: true,
-                                title: "Nao foi possivel ativar",
+                                title: "Não foi possível ativar",
                                 message: msg,
                                 variant: "error",
                                 primaryAction: {
@@ -131,7 +157,7 @@ export default function Signin() {
                 },
             },
             secondaryAction: {
-                label: "Agora nao",
+                label: "Agora não",
                 variant: "secondary",
                 onPress: navigateToTabs,
             },
@@ -141,8 +167,9 @@ export default function Signin() {
     async function handleSignIn() {
         try {
             setLoading(true);
+            pauseAuthRedirect();
             await signIn({ email: email.trim(), password });
-            askToEnableBiometrics();
+            await askToEnableBiometrics();
         } catch (err: any) {
             const msg =
                 err?.response?.data?.message?.toString?.() ||
@@ -157,12 +184,11 @@ export default function Signin() {
     async function handleBiometricSignIn() {
         try {
             setLoading(true);
+            pauseAuthRedirect();
             await signInWithBiometrics();
-            router.replace("/(tabs)");
+            navigateToTabs();
         } catch (err: any) {
-            const msg =
-                err?.message ||
-                "Nao foi possivel entrar com biometria.";
+            const msg = err?.message || "Não foi possível entrar com biometria.";
             showErrorModal(msg);
         } finally {
             setLoading(false);
@@ -170,8 +196,7 @@ export default function Signin() {
     }
 
     return (
-        <SafeAreaView style={[globalStyles.container, {justifyContent: 'center'}]}>
-            {/*Precisamos colocar a imagem do app aqui*/}
+        <SafeAreaView style={[globalStyles.container, { justifyContent: "center" }]}>
             <TextInput
                 style={style.input}
                 placeholder="Digite seu e-mail"
@@ -199,7 +224,7 @@ export default function Signin() {
                 <Text style={style.btnText}>{loading ? "Entrando..." : "Fazer Login"}</Text>
             </Pressable>
 
-            <Pressable style={[style.biometricBtn, biometricDisabled && style.disabledBtn]} onPress={handleBiometricSignIn} disabled={biometricDisabled} >
+            <Pressable style={[style.biometricBtn, biometricDisabled && style.disabledBtn]} onPress={handleBiometricSignIn} disabled={biometricDisabled}>
                 <FontAwesome5 name="fingerprint" size={24} color={colors.darkBlue} />
                 <Text style={[style.biometricText, biometricDisabled && style.disabledText]}>Entrar com Biometria</Text>
             </Pressable>
@@ -209,10 +234,10 @@ export default function Signin() {
             )}
 
             {isBiometricAvailable && !isBiometricEnabled && (
-                <Text style={style.helperText}>Faca login com e-mail e senha uma vez para ativar a biometria.</Text>
+                <Text style={style.helperText}>Faça login com e-mail e senha uma vez para ativar a biometria.</Text>
             )}
 
-            <Text style={style.linkText}>Nao possui uma conta? <Link href="/(auth)/sign-up" style={style.linkStrong}> Cadastre-se</Link></Text>
+            <Text style={style.linkText}>Não possui uma conta?<Link href="/(auth)/sign-up" style={style.linkStrong}> Cadastre-se</Link></Text>
 
             <NoticeModal
                 visible={modal.visible}
@@ -249,8 +274,8 @@ const style = StyleSheet.create({
         fontWeight: "700",
     },
     biometricBtn: {
-        display: 'flex',
-        flexDirection: 'row',
+        display: "flex",
+        flexDirection: "row",
         gap: 10,
         borderWidth: 2,
         borderColor: colors.darkBlue,
@@ -282,6 +307,6 @@ const style = StyleSheet.create({
     },
     linkStrong: {
         fontWeight: "bold",
-        color: colors.darkBlue
+        color: colors.darkBlue,
     },
 });

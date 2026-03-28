@@ -1,33 +1,33 @@
 import { getUser, User } from "@/api/auth.api";
 import { useCallback, useEffect, useState } from "react";
 
-export function getUserData(){
+export function useGetUser() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const loadUser = useCallback(async () => {
-        const u = await getUser();
-        setUser(u);
-    }, []);
-
-    const initialLoad = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
-            loadUser();
 
+            const userData = await getUser();
+            setUser(userData);
         } catch (err: any) {
-            setError(err?.message ?? "Erro ao carregar dados do usuário");
+            setError(err?.message ?? "Erro ao carregar dados do usuario");
         } finally {
             setLoading(false);
         }
-    }, [loadUser]);
+    }, []);
 
     useEffect(() => {
-        initialLoad();
-    }, [initialLoad]);
+        loadUser();
+    }, [loadUser]);
 
-    return{ user, loading, refreshing, error };
+    return {
+        user,
+        loading,
+        error,
+        reloadUser: loadUser,
+    };
 }

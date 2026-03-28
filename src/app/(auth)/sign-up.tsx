@@ -36,7 +36,16 @@ const hiddenModalState: ModalState = {
 };
 
 export default function Signup() {
-    const { signUp, signIn, enableBiometricLogin, isBiometricAvailable, isBiometricEnabled } = useAuth();
+    const {
+        signUp,
+        signIn,
+        enableBiometricLogin,
+        isBiometricAvailable,
+        isBiometricEnabled,
+        pauseAuthRedirect,
+        resumeAuthRedirect,
+        shouldOfferBiometricEnrollment,
+    } = useAuth();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -49,10 +58,12 @@ export default function Signup() {
 
     function navigateToTabs() {
         closeModal();
+        resumeAuthRedirect();
         router.replace("/(tabs)");
     }
 
     function showErrorModal(message: string) {
+        resumeAuthRedirect();
         setModal({
             visible: true,
             title: "Algo deu errado",
@@ -65,16 +76,18 @@ export default function Signup() {
         });
     }
 
-    function askToEnableBiometrics() {
-        if (!isBiometricAvailable || isBiometricEnabled) {
-            router.replace("/(tabs)");
+    async function askToEnableBiometrics() {
+        const shouldOffer = await shouldOfferBiometricEnrollment();
+
+        if (!shouldOffer) {
+            navigateToTabs();
             return;
         }
 
         setModal({
             visible: true,
             title: "Ativar login com biometria?",
-            message: "Sua conta foi criada. Deseja liberar os proximos acessos com a biometria do dispositivo?",
+            message: "Sua conta foi criada. Deseja liberar os próximos acessos com a biometria do dispositivo?",
             variant: "info",
             primaryAction: {
                 label: "Ativar",
@@ -82,7 +95,10 @@ export default function Signup() {
                     void (async () => {
                         try {
                             closeModal();
-                            const enabled = await enableBiometricLogin();
+                            const enabled = await enableBiometricLogin({
+                                email: email.trim(),
+                                password,
+                            });
 
                             if (enabled) {
                                 setModal({
@@ -98,15 +114,15 @@ export default function Signup() {
                                 return;
                             }
 
-                            router.replace("/(tabs)");
+                            navigateToTabs();
                         } catch (err: any) {
                             const msg =
                                 err?.message ||
-                                "Nao foi possivel ativar o login com biometria.";
+                                "Não foi possível ativar o login com biometria.";
 
                             setModal({
                                 visible: true,
-                                title: "Nao foi possivel ativar",
+                                title: "Não foi possível ativar",
                                 message: msg,
                                 variant: "error",
                                 primaryAction: {
@@ -119,7 +135,7 @@ export default function Signup() {
                 },
             },
             secondaryAction: {
-                label: "Agora nao",
+                label: "Agora não",
                 variant: "secondary",
                 onPress: navigateToTabs,
             },
@@ -129,28 +145,32 @@ export default function Signup() {
     async function handleSignUp() {
         try {
             setLoading(true);
+            pauseAuthRedirect();
             await signUp({ name: name.trim(), email: email.trim(), password });
             await signIn({ email: email.trim(), password });
+            const shouldOffer = await shouldOfferBiometricEnrollment();
 
             setModal({
                 visible: true,
                 title: "Bem-vindo!",
-                message: isBiometricAvailable && !isBiometricEnabled
+                message: shouldOffer
                     ? "Sua conta foi criada com sucesso. Deseja ativar o login com biometria agora?"
                     : "Sua conta foi criada com sucesso.",
                 variant: "success",
-                primaryAction: isBiometricAvailable && !isBiometricEnabled
+                primaryAction: shouldOffer
                     ? {
                         label: "Ativar biometria",
-                        onPress: askToEnableBiometrics,
+                        onPress: () => {
+                            void askToEnableBiometrics();
+                        },
                     }
                     : {
                         label: "Continuar",
                         onPress: navigateToTabs,
                     },
-                secondaryAction: isBiometricAvailable && !isBiometricEnabled
+                secondaryAction: shouldOffer
                     ? {
-                        label: "Agora nao",
+                        label: "Agora não",
                         variant: "secondary",
                         onPress: navigateToTabs,
                     }
@@ -169,7 +189,6 @@ export default function Signup() {
 
     return (
         <SafeAreaView style={[globalStyles.container, {justifyContent: 'center'}]}>
-            {/*Precisamos colocar a imagem do app aqui*/}
             <TextInput
                 style={style.input}
                 placeholder="Digite seu nome"
@@ -206,7 +225,7 @@ export default function Signup() {
                 <Text style={style.btnText}>{loading ? "Criando conta..." : "Criar conta"}</Text>
             </Pressable>
 
-            <Text style={style.linkText}>Ja possui uma conta?<Link href="/(auth)/sign-in" style={style.linkStrong}> Entre agora</Link></Text>
+            <Text style={style.linkText}>Já possui uma conta?<Link href="/(auth)/sign-in" style={style.linkStrong}> Entre agora</Link></Text>
 
             <NoticeModal
                 visible={modal.visible}

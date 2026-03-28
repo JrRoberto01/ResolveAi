@@ -1,9 +1,10 @@
-import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
+﻿import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileInfo } from '@/components/profile/ProfileInfo';
 import { SettingsOption } from '@/components/profile/SettingsOption';
 import { StatCard } from '@/components/profile/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGetUser } from '@/hooks/useGetUser';
 import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -12,19 +13,11 @@ import { styles } from '../../style/profile_style';
 import { occurrences, userData } from './profile.data';
 
 export default function Profile() {
-    // const { user, loading, refreshing, error} = getUserData();
     const { signOut } = useAuth();
-
-    // if (loading) {
-    //     return <ActivityIndicator style={{ flex: 1 }} size="large" />;
-    // }
-
-    // if (error) {
-    //     return <Text>Erro: {error}</Text>;
-    // }
-
+    const { user } = useGetUser();
+    
     async function handleSignOut() {
-        await signOut();
+        await signOut({ clearBiometric: true });
         router.replace("/(auth)/sign-in");
     }
 
@@ -60,7 +53,7 @@ export default function Profile() {
 
                 <ProfileInfo
                     avatarUrl={userData.avatarUrl}
-                    name={userData.name}
+                    name={user?.name ?? userData.name}
                     location={userData.location}
                     memberSince={userData.memberSince}
                 />
@@ -84,7 +77,7 @@ export default function Profile() {
                             imageUrl={occurrence.imageUrl}
                             title={occurrence.title}
                             subtitle={occurrence.subtitle}
-                            status={occurrence.status}
+                            status={occurrence.status as "Em análise" | "Resolvido"}
                         />
                     ))}
                 </View>
