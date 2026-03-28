@@ -1,9 +1,11 @@
-import { Text, View } from "react-native";
+import { styles } from "@/style/global";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <Text>Feed</Text>
-    </View>
+    </SafeAreaView>
   );
 }
