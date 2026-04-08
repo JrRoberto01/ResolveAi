@@ -1,21 +1,29 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { Ionicons } from '@expo/vector-icons';
 import colors from '@/style/colors';
+import { styles } from '@/style/profile_style';
 
 type ProfileInfoProps = {
     avatarUrl: string;
     name: string;
     location: string;
     memberSince: string;
+    onAvatarPress?: () => void;
 };
 
-export function ProfileInfo({ avatarUrl, name, location, memberSince }: ProfileInfoProps) {
+export function ProfileInfo({ avatarUrl, name, location, memberSince, onAvatarPress }: ProfileInfoProps) {
     return (
         <View style={styles.profileInfoContainer}>
-            <Image 
-                source={{ uri: avatarUrl }} 
-                style={styles.avatar} 
-            />
+            <TouchableOpacity onPress={onAvatarPress} activeOpacity={0.7} style={styles.avatarWrapper}>
+                <Image 
+                    source={{ uri: avatarUrl }} 
+                    style={styles.avatar} 
+                />
+                <View style={styles.cameraIconBadge}>
+                    <Ionicons name="camera" size={14} color="#FFFFFF" />
+                </View>
+            </TouchableOpacity>
             <Text style={styles.userName}>{name}</Text>
             <View style={styles.locationContainer}>
                 <FontAwesome5 name="map-marker-alt" size={14} color={colors.darkGrey} />
@@ -26,37 +34,3 @@ export function ProfileInfo({ avatarUrl, name, location, memberSince }: ProfileI
     );
 }
 
-const styles = StyleSheet.create({
-    profileInfoContainer: {
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 3,
-        borderColor: colors.white,
-        marginBottom: 12,
-    },
-    userName: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: colors.black,
-        marginBottom: 4,
-    },
-    locationContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    locationText: {
-        fontSize: 14,
-        color: '#64748b',
-        marginLeft: 6,
-    },
-    memberSinceText: {
-        fontSize: 12,
-        color: '#94a3b8',
-    },
-});

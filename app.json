@@ -4,18 +4,18 @@
     "slug": "resolveAi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "icon": "./src/assets/splash-icon.png",
     "scheme": "resolveai",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/images/logo.png",
+      "icon": "./src/assets/splash-icon.png",
       "bundleIdentifier": "com.anonymous.resolveAi"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/images/logo.png",
-        "monochromeImage": "./assets/images/logo.png"
+        "foregroundImage": "./src/assets/splash-icon.png",
+        "monochromeImage": "./src/assets/splash-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -28,7 +28,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/logo.png"
+      "favicon": "./src/assets/splash-icon.png"
     },
     "plugins": [
       "expo-router",

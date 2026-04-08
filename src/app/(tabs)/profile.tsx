@@ -1,4 +1,5 @@
-﻿import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
+import { Camera } from '@/components/Camera';
+import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileInfo } from '@/components/profile/ProfileInfo';
 import { SettingsOption } from '@/components/profile/SettingsOption';
@@ -6,8 +7,8 @@ import { StatCard } from '@/components/profile/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGetUser } from '@/hooks/useGetUser';
 import { router } from 'expo-router';
-import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../../style/profile_style';
 import { occurrences, userData } from './profile.data';
@@ -15,10 +16,25 @@ import { occurrences, userData } from './profile.data';
 export default function Profile() {
     const { signOut } = useAuth();
     const { user } = useGetUser();
-    
+    const [showCamera, setShowCamera] = useState(false);
+    const [avatarUri, setAvatarUri] = useState(userData.avatarUrl);
+
     async function handleSignOut() {
         await signOut({ clearBiometric: true });
         router.replace("/(auth)/sign-in");
+    }
+
+    function handleAvatarPress() {
+        setShowCamera(true);
+    }
+
+    function handleCapture(uri: string) {
+        setAvatarUri(uri);
+        setShowCamera(false);
+    }
+
+    function handleCloseCamera() {
+        setShowCamera(false);
     }
 
     const settingsOptions = [
@@ -47,15 +63,20 @@ export default function Profile() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Modal visible={showCamera} animationType="slide" statusBarTranslucent>
+                <Camera onCapture={handleCapture} onClose={handleCloseCamera} />
+            </Modal>
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 
                 <ProfileHeader />
 
                 <ProfileInfo
-                    avatarUrl={userData.avatarUrl}
+                    avatarUrl={avatarUri}
                     name={user?.name ?? userData.name}
                     location={userData.location}
                     memberSince={userData.memberSince}
+                    onAvatarPress={handleAvatarPress}
                 />
 
                 <View style={styles.statsContainer}>

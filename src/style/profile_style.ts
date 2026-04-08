@@ -50,4 +50,54 @@ export const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 2,
     },
+
+    // ProfileInfo
+    profileInfoContainer: {
+        alignItems: 'center' as const,
+        marginBottom: 24,
+    },
+    avatarWrapper: {
+        position: 'relative' as const,
+        marginBottom: 12,
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: colors.white,
+    },
+    cameraIconBadge: {
+        position: 'absolute' as const,
+        bottom: 2,
+        right: 2,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: '#0066CC',
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
+        borderWidth: 2,
+        borderColor: '#FFFFFF',
+    },
+    userName: {
+        fontSize: 22,
+        fontWeight: 'bold' as const,
+        color: colors.black,
+        marginBottom: 4,
+    },
+    locationContainer: {
+        flexDirection: 'row' as const,
+        alignItems: 'center' as const,
+        marginBottom: 4,
+    },
+    locationText: {
+        fontSize: 14,
+        color: '#64748b',
+        marginLeft: 6,
+    },
+    memberSinceText: {
+        fontSize: 12,
+        color: '#94a3b8',
+    },
 });

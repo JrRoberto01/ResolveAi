@@ -1,12 +1,20 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import {
-  View, Text, StyleSheet, Image, TouchableOpacity, Modal,
-  ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent
+  Dimensions,
+  Image,
+  Modal,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { globalStyles } from '../style/global';
 import { colors } from '../style/colors';
-import { spacing, radii } from '../style/spacing';
+import { globalStyles } from '../style/global';
+import { radii, spacing } from '../style/spacing';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -63,7 +71,7 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
 
   return (
     <View style={[globalStyles.card, { padding: 0, overflow: 'hidden' }]}>
-      {/* Cover image */}
+
       <TouchableOpacity
         style={styles.imageContainer}
         activeOpacity={hasPhotos ? 0.8 : 1}
@@ -94,7 +102,6 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
         )}
       </TouchableOpacity>
 
-      {/* Complementary photo thumbnails */}
       {allPhotos.length > 1 && (
         <View style={styles.thumbnailStrip}>
           {allPhotos.slice(1, 5).map((uri, index) => (
@@ -110,7 +117,6 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
         </View>
       )}
 
-      {/* Card content */}
       <View style={styles.content}>
         <Text style={styles.title}>{data.title}</Text>
 
@@ -142,10 +148,9 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
         </View>
       </View>
 
-      {/* Fullscreen gallery viewer */}
       <Modal visible={galleryOpen} transparent animationType="fade">
         <View style={styles.viewerOverlay}>
-          {/* Top bar */}
+
           <View style={styles.viewerTopBar}>
             <Text style={styles.viewerCounter}>
               {activeIndex + 1} / {photoCount}
@@ -158,7 +163,7 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
             </TouchableOpacity>
           </View>
 
-          {/* Swipeable photos */}
+
           <ScrollView
             ref={scrollRef}
             horizontal
@@ -179,7 +184,7 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
             ))}
           </ScrollView>
 
-          {/* Navigation arrows */}
+
           {activeIndex > 0 && (
             <TouchableOpacity
               style={[styles.navArrow, styles.navArrowLeft]}
@@ -197,7 +202,7 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
             </TouchableOpacity>
           )}
 
-          {/* Dot indicators */}
+
           {photoCount > 1 && (
             <View style={styles.dotRow}>
               {allPhotos.map((_, index) => (
@@ -212,7 +217,7 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
             </View>
           )}
 
-          {/* Label: Capa / Complementar */}
+
           <View style={styles.photoLabel}>
             <Text style={styles.photoLabelText}>
               {activeIndex === 0 ? 'Foto de Capa' : `Foto Complementar ${activeIndex}`}
@@ -268,7 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // Thumbnail strip
+
   thumbnailStrip: {
     flexDirection: 'row',
     paddingHorizontal: spacing.sm,
@@ -288,7 +293,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 
-  // Card content
+
   content: {
     padding: spacing.md,
   },
@@ -357,7 +362,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  // Fullscreen gallery viewer
+
   viewerOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.95)',
