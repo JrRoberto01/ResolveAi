@@ -9,6 +9,7 @@ import { SearchBar } from '../../components/SearchBar';
 
 import React, { useState } from "react";
 import Toast from 'react-native-toast-message';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import { globalStyles } from '../../style/global';
 import { spacing } from '../../style/spacing';
 import AddItem from "./add";
@@ -19,8 +20,22 @@ export default function Index() {
   const [isAdding, setIsAdding] = useState(false);
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [searchText, setSearchText] = useState('');
 
-  const categories = ['Todos', 'Buracos', 'Iluminação', 'Lixo', 'Alagamento'];
+  const { toggleSupport, isSupported } = useFavorites();
+
+  const categories = ['Todos', 'Buraco na via', 'Iluminação pública', 'Lixo / Entulho', 'Vazamento', 'Alagamento'];
+
+  const filteredItems = listItems.filter((item) => {
+    const matchCategory =
+      activeCategory === 'Todos' || item.category === activeCategory;
+
+    const matchSearch =
+      !searchText.trim() ||
+      item.title.toLowerCase().includes(searchText.toLowerCase());
+
+    return matchCategory && matchSearch;
+  });
 
   const handleAddItem = (newItem: any) => {
     setListItems([newItem, ...listItems]);
@@ -40,10 +55,8 @@ export default function Index() {
     Toast.show({ type: 'success', text1: 'Excluída', text2: 'A ocorrência foi removida permanentemente.' });
   };
 
-  const handleLike = (id: string) => {
-    setListItems(listItems.map(item =>
-      item.id === id ? { ...item, likes: item.likes + 1 } : item
-    ));
+  const handleSupport = (item: any) => {
+    toggleSupport(item);
   };
 
   if (isAdding || editingItem) {
@@ -67,7 +80,11 @@ export default function Index() {
       <Header title="Resolve Aí" showNotification />
 
       <View style={{ padding: spacing.md, paddingBottom: 0 }}>
-        <SearchBar />
+        <SearchBar
+          placeholder="Buscar ocorrências..."
+          value={searchText}
+          onChangeText={setSearchText}
+        />
         <CategorySelector
           horizontal
           categories={categories}
@@ -77,9 +94,10 @@ export default function Index() {
       </View>
 
       <ListItem
-        listItems={listItems}
-        onLike={handleLike}
+        listItems={filteredItems}
+        onLike={handleSupport}
         onEdit={(item: any) => setEditingItem(item)}
+        isSupported={isSupported}
       />
 
       <FAB onPress={() => setIsAdding(true)} />

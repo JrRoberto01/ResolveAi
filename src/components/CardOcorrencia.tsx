@@ -37,9 +37,10 @@ interface CardOcorrenciaProps {
   data: Ocorrencia;
   onPressSupport?: () => void;
   onPressEdit?: () => void;
+  isSupported?: boolean;
 }
 
-export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorrenciaProps) {
+export function CardOcorrencia({ data, onPressSupport, onPressEdit, isSupported = false }: CardOcorrenciaProps) {
   const defaultImage = require('../../assets/images/icon.png');
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -133,8 +134,8 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit }: CardOcorre
 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.actionButton} onPress={onPressSupport}>
-            <Ionicons name="thumbs-up-outline" size={18} color={colors.primary} />
-            <Text style={styles.actionTextPrimary}>Apoiar ({data.likes})</Text>
+            <Ionicons name={isSupported ? "thumbs-up" : "thumbs-up-outline"} size={18} color={colors.primary} />
+            <Text style={styles.actionTextPrimary}>{isSupported ? 'Apoiado (1)' : 'Apoiar'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton}>

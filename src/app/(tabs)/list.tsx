@@ -3,7 +3,7 @@ import { FlatList, View } from 'react-native';
 import { CardOcorrencia } from '../../components/CardOcorrencia';
 import { spacing } from '../../style/spacing';
 
-export default function ListItem({ listItems, onLike, onEdit }: any) {
+export default function ListItem({ listItems, onLike, onEdit, isSupported }: any) {
     return (
         <View style={{ flex: 1, width: '100%' }}>
             <FlatList
@@ -14,8 +14,9 @@ export default function ListItem({ listItems, onLike, onEdit }: any) {
                 renderItem={({ item }) => (
                     <CardOcorrencia 
                         data={item} 
-                        onPressSupport={() => onLike(item.id)} 
+                        onPressSupport={() => onLike(item)} 
                         onPressEdit={() => onEdit(item)}
+                        isSupported={isSupported ? isSupported(item.id) : false}
                     />
                 )}
             />
