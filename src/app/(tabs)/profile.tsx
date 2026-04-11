@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../style/profile_style';
 
 const userData = {
@@ -47,6 +48,14 @@ export default function Profile() {
     const [avatarUri, setAvatarUri] = useState(userData.avatarUrl);
 
     useEffect(() => {
+        AsyncStorage.getItem('@profileAvatar').then((stored) => {
+            if (stored) {
+                setAvatarUri(stored);
+            }
+        }).catch(console.error);
+    }, []);
+
+    useEffect(() => {
         let isMounted = true;
 
         void (async () => {
@@ -77,6 +86,7 @@ export default function Profile() {
 
     function handleCapture(uri: string) {
         setAvatarUri(uri);
+        AsyncStorage.setItem('@profileAvatar', uri).catch(console.error);
         setShowCamera(false);
     }
 

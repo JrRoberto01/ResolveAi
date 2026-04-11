@@ -1,6 +1,6 @@
 import palette from '@/style/colors';
 import { Modal, Pressable, Text, View } from 'react-native';
-import { styles } from './NoticeModalStyle';
+import { styles } from './noticeModalStyle';
 
 type NoticeModalAction = {
     label: string;

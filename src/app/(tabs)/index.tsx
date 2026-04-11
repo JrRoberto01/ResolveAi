@@ -5,6 +5,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Alert, FlatList, Modal, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AnonymousSwitch } from "../../components/AnonymousSwitch";
 import { Button } from "../../components/Button";
 import { Camera } from "../../components/Camera";
@@ -182,6 +183,14 @@ export default function Index() {
   const [searchText, setSearchText] = useState("");
   const { toggleSupport, isSupported } = useFavorites();
 
+  React.useEffect(() => {
+    AsyncStorage.getItem("@ocorrencias").then((stored) => {
+      if (stored) {
+        setListItems(JSON.parse(stored));
+      }
+    }).catch(console.error);
+  }, []);
+
   const filteredItems = listItems.filter((item) => {
     const matchesCategory = activeCategory === ALL_CATEGORIES[0] || item.category === activeCategory;
     const matchesSearch = !searchText.trim() || item.title.toLowerCase().includes(searchText.toLowerCase());
@@ -189,21 +198,31 @@ export default function Index() {
   });
 
   function handleAddItem(newItem: Ocorrencia) {
-    setListItems((currentItems) => [newItem, ...currentItems]);
+    setListItems((currentItems) => {
+      const newItems = [newItem, ...currentItems];
+      AsyncStorage.setItem("@ocorrencias", JSON.stringify(newItems)).catch(console.error);
+      return newItems;
+    });
     setIsAdding(false);
     Toast.show({ type: "success", text1: "Sucesso", text2: "Sua ocorrência foi publicada!" });
   }
 
   function handleEditItem(updatedItem: Ocorrencia) {
-    setListItems((currentItems) =>
-      currentItems.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
-    );
+    setListItems((currentItems) => {
+      const newItems = currentItems.map((item) => (item.id === updatedItem.id ? updatedItem : item));
+      AsyncStorage.setItem("@ocorrencias", JSON.stringify(newItems)).catch(console.error);
+      return newItems;
+    });
     setEditingItem(null);
     Toast.show({ type: "success", text1: "Atualizada", text2: "A ocorrência foi atualizada!" });
   }
 
   function handleDeleteItem(id: string) {
-    setListItems((currentItems) => currentItems.filter((item) => item.id !== id));
+    setListItems((currentItems) => {
+      const newItems = currentItems.filter((item) => item.id !== id);
+      AsyncStorage.setItem("@ocorrencias", JSON.stringify(newItems)).catch(console.error);
+      return newItems;
+    });
     setEditingItem(null);
     Toast.show({ type: "success", text1: "Excluída", text2: "A ocorrência foi removida permanentemente." });
   }

@@ -1,21 +1,21 @@
 ﻿{
   "expo": {
-    "name": "resolveAi",
+    "name": "Resolve Ai",
     "slug": "resolveAi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/splash-icon.png",
+    "icon": "./assets/images/tabIcons/splash-icon.png",
     "scheme": "resolveai",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./src/assets/splash-icon.png",
+      "icon": "./assets/images/tabIcons/splash-icon.png",
       "bundleIdentifier": "com.anonymous.resolveAi"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./src/assets/splash-icon.png",
-        "monochromeImage": "./src/assets/splash-icon.png"
+        "foregroundImage": "./assets/images/tabIcons/splash-icon.png",
+        "monochromeImage": "./assets/images/tabIcons/splash-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -28,7 +28,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./src/assets/splash-icon.png"
+      "favicon": "./assets/images/tabIcons/splash-icon.png"
     },
     "plugins": [
       "expo-router",
