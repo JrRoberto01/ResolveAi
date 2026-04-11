@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import colors from './colors';
+import palette from './colors';
 
 export const styles = StyleSheet.create({
     container: {
@@ -28,21 +28,21 @@ export const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.black,
+        color: palette.black,
     },
     sectionTitleOptions: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.black,
+        color: palette.black,
         marginBottom: 16,
     },
     seeAllText: {
         fontSize: 14,
-        color: colors.darkBlue,
+        color: palette.darkBlue,
         fontWeight: '600',
     },
     optionsContainer: {
-        backgroundColor: colors.white,
+        backgroundColor: palette.white,
         borderRadius: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderWidth: 3,
-        borderColor: colors.white,
+        borderColor: palette.white,
     },
     cameraIconBadge: {
         position: 'absolute' as const,
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     userName: {
         fontSize: 22,
         fontWeight: 'bold' as const,
-        color: colors.black,
+        color: palette.black,
         marginBottom: 4,
     },
     locationContainer: {
@@ -101,3 +101,4 @@ export const styles = StyleSheet.create({
         color: '#94a3b8',
     },
 });
+

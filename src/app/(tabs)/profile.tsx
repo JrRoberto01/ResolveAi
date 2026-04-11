@@ -1,3 +1,4 @@
+import { getUser, User } from '@/api/auth.api';
 import { Camera } from '@/components/Camera';
 import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
@@ -5,23 +6,69 @@ import { ProfileInfo } from '@/components/profile/ProfileInfo';
 import { SettingsOption } from '@/components/profile/SettingsOption';
 import { StatCard } from '@/components/profile/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
-import { useGetUser } from '@/hooks/useGetUser';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../../style/profile_style';
-import { occurrences, userData } from './profile.data';
+
+const userData = {
+    avatarUrl: 'https://i.pravatar.cc/150?u=joao',
+    name: 'João da Silva',
+    location: 'São Paulo, SP',
+    memberSince: 'Membro desde Março de 2023',
+    stats: {
+        occurrences: '12',
+        supports: '45',
+    },
+};
+
+const occurrences = [
+    {
+        id: '1',
+        imageUrl: 'https://picsum.photos/id/10/200',
+        title: 'Buraco na Av. Paulista',
+        subtitle: 'Há 2 dias • Infraestrutura',
+        status: 'Em análise' as const,
+    },
+    {
+        id: '2',
+        imageUrl: 'https://picsum.photos/id/12/200',
+        title: 'Poste sem luz - Rua Augusta',
+        subtitle: 'Há 1 semana • Iluminação',
+        status: 'Resolvido' as const,
+    },
+];
 
 export default function Profile() {
     const { signOut } = useAuth();
-    const { user } = useGetUser();
+    const [user, setUser] = useState<User | null>(null);
     const [showCamera, setShowCamera] = useState(false);
     const [avatarUri, setAvatarUri] = useState(userData.avatarUrl);
 
+    useEffect(() => {
+        let isMounted = true;
+
+        void (async () => {
+            try {
+                const nextUser = await getUser();
+
+                if (isMounted) {
+                    setUser(nextUser);
+                }
+            } catch {
+                // Mantém os dados mockados como fallback quando a API falha.
+            }
+        })();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     async function handleSignOut() {
         await signOut({ clearBiometric: true });
-        router.replace("/(auth)/sign-in");
+        router.replace('/(auth)/sign-in');
     }
 
     function handleAvatarPress() {
@@ -63,12 +110,11 @@ export default function Profile() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Modal visible={showCamera} animationType="slide" statusBarTranslucent>
+            <Modal visible={showCamera} animationType="slide">
                 <Camera onCapture={handleCapture} onClose={handleCloseCamera} />
             </Modal>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-
                 <ProfileHeader />
 
                 <ProfileInfo
@@ -98,7 +144,7 @@ export default function Profile() {
                             imageUrl={occurrence.imageUrl}
                             title={occurrence.title}
                             subtitle={occurrence.subtitle}
-                            status={occurrence.status as "Em análise" | "Resolvido"}
+                            status={occurrence.status}
                         />
                     ))}
                 </View>
@@ -107,9 +153,9 @@ export default function Profile() {
                     <Text style={styles.sectionTitleOptions}>Configurações</Text>
 
                     <View style={styles.optionsContainer}>
-                        {settingsOptions.map((option, index) => (
+                        {settingsOptions.map((option) => (
                             <SettingsOption
-                                key={index}
+                                key={option.text}
                                 icon={option.icon}
                                 text={option.text}
                                 showDivider={option.showDivider}

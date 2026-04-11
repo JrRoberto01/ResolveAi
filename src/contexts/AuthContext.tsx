@@ -1,13 +1,13 @@
-﻿import * as LocalAuthentication from "expo-local-authentication";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import * as LocalAuthentication from 'expo-local-authentication';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
     signIn as signInApi,
     SignInPayload,
     SignInResponse,
     signUp as signUpApi,
     SignUpPayload,
-} from "../api/auth.api";
-import { api, refreshAuthSession, setOnUnauthorized } from "../api/client";
+} from '../api/auth.api';
+import { api, refreshAuthSession, setOnUnauthorized } from '../api/client';
 import {
     AuthSession,
     clearAuthSession,
@@ -17,7 +17,7 @@ import {
     hasBiometricCredentials,
     setAuthSession,
     setBiometricCredentials,
-} from "../auth/tokenStorage";
+} from '../auth/tokenStorage';
 
 type SignOutOptions = {
     clearBiometric?: boolean;
@@ -44,14 +44,14 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 function isJwtExpired(token: string, bufferInSeconds = 15) {
     try {
-        const [, payload] = token.split(".");
+        const [, payload] = token.split('.');
 
         if (!payload) {
             return true;
         }
 
-        const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
-        const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, "=");
+        const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=');
         const decodedPayload = JSON.parse(atob(paddedPayload)) as { exp?: number };
 
         if (!decodedPayload.exp) {
@@ -102,7 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function shouldOfferBiometricEnrollment() {
         const { biometricReady, hasStoredBiometricCredentials } = await refreshBiometricState();
-
         return biometricReady && !hasStoredBiometricCredentials;
     }
 
@@ -126,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     useEffect(() => {
-        (async () => {
+        void (async () => {
             try {
                 const [storedSession] = await Promise.all([
                     getAuthSession(),
@@ -164,12 +163,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function signIn(payload: SignInPayload) {
         const result: SignInResponse = await signInApi(payload);
 
-        const session = {
+        await applySession({
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
-        } satisfies AuthSession;
-
-        await applySession(session);
+        });
     }
 
     async function signUp(payload: SignUpPayload) {
@@ -180,14 +177,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { biometricReady } = await refreshBiometricState();
 
         if (!biometricReady) {
-            throw new Error("Login com biometria não está disponível neste dispositivo.");
+            throw new Error('Login com biometria não está disponível neste dispositivo.');
         }
 
         const biometricCredentials = await getBiometricCredentials();
 
         if (!biometricCredentials) {
             setIsBiometricEnabled(false);
-            throw new Error("O login com biometria ainda não foi ativado nesta conta.");
+            throw new Error('O login com biometria ainda não foi ativado nesta conta.');
         }
 
         try {
@@ -200,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (error?.response?.status === 401) {
                 await clearBiometricCredentials();
                 setIsBiometricEnabled(false);
-                throw new Error("Suas credenciais biométricas expiraram. Faça login com e-mail e senha para ativá-las novamente.");
+                throw new Error('Suas credenciais biométricas expiraram. Faça login com e-mail e senha para ativá-las novamente.');
             }
 
             throw error;
@@ -212,11 +209,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { biometricReady } = await refreshBiometricState();
 
         if (!activeSession) {
-            throw new Error("Faça login primeiro para ativar a biometria.");
+            throw new Error('Faça login primeiro para ativar a biometria.');
         }
 
         if (!biometricReady) {
-            throw new Error("Nenhuma biometria cadastrada foi encontrada neste dispositivo.");
+            throw new Error('Nenhuma biometria cadastrada foi encontrada neste dispositivo.');
         }
 
         await setBiometricCredentials({
@@ -229,7 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
     }
 
-    const value = useMemo<AuthContextValue>(() => ({
+    const value: AuthContextValue = {
         token,
         isAuthenticated: !!token,
         isLoading,
@@ -244,13 +241,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         enableBiometricLogin,
         signOut,
-    }), [token, isLoading, isBiometricAvailable, isBiometricEnabled, isAuthRedirectPaused]);
+    };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
     const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider");
+    if (!ctx) throw new Error('useAuth deve ser usado dentro de AuthProvider');
     return ctx;
 }

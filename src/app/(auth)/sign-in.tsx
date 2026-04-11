@@ -1,37 +1,37 @@
-﻿import NoticeModal from "@/components/NoticeModal/NoticeModal";
-import { useAuth } from "@/contexts/AuthContext";
-import colors from "@/style/colors";
-import { globalStyles } from "@/style/global";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Link, router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import NoticeModal from '@/components/NoticeModal';
+import { useAuth } from '@/contexts/AuthContext';
+import palette from '@/style/colors';
+import { globalStyles } from '@/style/global';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { Link, router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ModalState = {
     visible: boolean;
     title: string;
     message: string;
-    variant: "info" | "success" | "warning" | "error";
+    variant: 'info' | 'success' | 'warning' | 'error';
     primaryAction: {
         label: string;
         onPress: () => void;
-        variant?: "primary" | "secondary" | "danger";
+        variant?: 'primary' | 'secondary' | 'danger';
     };
     secondaryAction?: {
         label: string;
         onPress: () => void;
-        variant?: "primary" | "secondary" | "danger";
+        variant?: 'primary' | 'secondary' | 'danger';
     };
 };
 
 const hiddenModalState: ModalState = {
     visible: false,
-    title: "",
-    message: "",
-    variant: "info",
+    title: '',
+    message: '',
+    variant: 'info',
     primaryAction: {
-        label: "Fechar",
+        label: 'Fechar',
         onPress: () => undefined,
     },
 };
@@ -49,32 +49,12 @@ export default function Signin() {
         shouldOfferBiometricEnrollment,
     } = useAuth();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [modal, setModal] = useState<ModalState>(hiddenModalState);
     const [hasAttemptedAutoBiometric, setHasAttemptedAutoBiometric] = useState(false);
-
-    const biometricDisabled = useMemo(
-        () => loading || !isBiometricAvailable || !isBiometricEnabled,
-        [loading, isBiometricAvailable, isBiometricEnabled],
-    );
-
-    useEffect(() => {
-        if (
-            loading ||
-            modal.visible ||
-            isAuthenticated ||
-            hasAttemptedAutoBiometric ||
-            !isBiometricAvailable ||
-            !isBiometricEnabled
-        ) {
-            return;
-        }
-
-        setHasAttemptedAutoBiometric(true);
-        void handleBiometricSignIn();
-    }, [loading, modal.visible, isAuthenticated, hasAttemptedAutoBiometric, isBiometricAvailable, isBiometricEnabled]);
+    const biometricDisabled = loading || !isBiometricAvailable || !isBiometricEnabled;
 
     function closeModal() {
         setModal(hiddenModalState);
@@ -83,18 +63,18 @@ export default function Signin() {
     function navigateToTabs() {
         closeModal();
         resumeAuthRedirect();
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
     }
 
     function showErrorModal(message: string) {
         resumeAuthRedirect();
         setModal({
             visible: true,
-            title: "Algo deu errado",
+            title: 'Algo deu errado',
             message,
-            variant: "error",
+            variant: 'error',
             primaryAction: {
-                label: "Entendi",
+                label: 'Entendi',
                 onPress: closeModal,
             },
         });
@@ -110,11 +90,11 @@ export default function Signin() {
 
         setModal({
             visible: true,
-            title: "Ativar login com biometria?",
-            message: "Nos próximos acessos você poderá entrar usando a biometria do dispositivo.",
-            variant: "info",
+            title: 'Ativar login com biometria?',
+            message: 'Nos próximos acessos você poderá entrar usando a biometria do dispositivo.',
+            variant: 'info',
             primaryAction: {
-                label: "Ativar",
+                label: 'Ativar',
                 onPress: () => {
                     void (async () => {
                         try {
@@ -127,11 +107,11 @@ export default function Signin() {
                             if (enabled) {
                                 setModal({
                                     visible: true,
-                                    title: "Tudo certo",
-                                    message: "Login com biometria ativado com sucesso.",
-                                    variant: "success",
+                                    title: 'Tudo certo',
+                                    message: 'Login com biometria ativado com sucesso.',
+                                    variant: 'success',
                                     primaryAction: {
-                                        label: "Continuar",
+                                        label: 'Continuar',
                                         onPress: navigateToTabs,
                                     },
                                 });
@@ -140,15 +120,15 @@ export default function Signin() {
 
                             navigateToTabs();
                         } catch (err: any) {
-                            const msg = err?.message || "Não foi possível ativar o login com biometria.";
+                            const msg = err?.message || 'Não foi possí­vel ativar o login com biometria.';
 
                             setModal({
                                 visible: true,
-                                title: "Não foi possível ativar",
+                                title: 'Não foi possí­vel ativar',
                                 message: msg,
-                                variant: "error",
+                                variant: 'error',
                                 primaryAction: {
-                                    label: "Continuar",
+                                    label: 'Continuar',
                                     onPress: navigateToTabs,
                                 },
                             });
@@ -157,8 +137,8 @@ export default function Signin() {
                 },
             },
             secondaryAction: {
-                label: "Agora não",
-                variant: "secondary",
+                label: 'Agora não',
+                variant: 'secondary',
                 onPress: navigateToTabs,
             },
         });
@@ -174,7 +154,7 @@ export default function Signin() {
             const msg =
                 err?.response?.data?.message?.toString?.() ||
                 err?.message ||
-                "Falha ao entrar. Verifique e-mail e senha.";
+                'Falha ao entrar. Verifique e-mail e senha.';
             showErrorModal(msg);
         } finally {
             setLoading(false);
@@ -188,15 +168,65 @@ export default function Signin() {
             await signInWithBiometrics();
             navigateToTabs();
         } catch (err: any) {
-            const msg = err?.message || "Não foi possível entrar com biometria.";
+            const msg = err?.message || 'Não foi possí­vel entrar com biometria.';
             showErrorModal(msg);
         } finally {
             setLoading(false);
         }
     }
 
+    useEffect(() => {
+        if (
+            loading ||
+            modal.visible ||
+            isAuthenticated ||
+            hasAttemptedAutoBiometric ||
+            !isBiometricAvailable ||
+            !isBiometricEnabled
+        ) {
+            return;
+        }
+
+        setHasAttemptedAutoBiometric(true);
+
+        void (async () => {
+            try {
+                setLoading(true);
+                pauseAuthRedirect();
+                await signInWithBiometrics();
+                closeModal();
+                resumeAuthRedirect();
+                router.replace('/(tabs)');
+            } catch (err: any) {
+                resumeAuthRedirect();
+                setModal({
+                    visible: true,
+                    title: 'Algo deu errado',
+                    message: err?.message || 'Não foi possível entrar com biometria.',
+                    variant: 'error',
+                    primaryAction: {
+                        label: 'Entendi',
+                        onPress: closeModal,
+                    },
+                });
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, [
+        hasAttemptedAutoBiometric,
+        isAuthenticated,
+        isBiometricAvailable,
+        isBiometricEnabled,
+        loading,
+        modal.visible,
+        pauseAuthRedirect,
+        resumeAuthRedirect,
+        signInWithBiometrics,
+    ]);
+
     return (
-        <SafeAreaView style={[globalStyles.container, { justifyContent: "center" }]}>
+        <SafeAreaView style={[globalStyles.container, { justifyContent: 'center' }]}>
             <TextInput
                 style={style.input}
                 placeholder="Digite seu e-mail"
@@ -221,11 +251,11 @@ export default function Signin() {
             />
 
             <Pressable style={style.btn} onPress={handleSignIn} disabled={loading}>
-                <Text style={style.btnText}>{loading ? "Entrando..." : "Fazer Login"}</Text>
+                <Text style={style.btnText}>{loading ? 'Entrando...' : 'Fazer Login'}</Text>
             </Pressable>
 
             <Pressable style={[style.biometricBtn, biometricDisabled && style.disabledBtn]} onPress={handleBiometricSignIn} disabled={biometricDisabled}>
-                <FontAwesome5 name="fingerprint" size={24} color={colors.darkBlue} />
+                <FontAwesome5 name="fingerprint" size={24} color={palette.darkBlue} />
                 <Text style={[style.biometricText, biometricDisabled && style.disabledText]}>Entrar com Biometria</Text>
             </Pressable>
 
@@ -255,58 +285,59 @@ export default function Signin() {
 const style = StyleSheet.create({
     input: {
         borderWidth: 1,
-        borderColor: colors.darkGrey,
+        borderColor: palette.darkGrey,
         borderRadius: 2,
-        backgroundColor: colors.white,
+        backgroundColor: palette.white,
         paddingHorizontal: 15,
         paddingVertical: 12,
-        color: colors.black,
+        color: palette.black,
     },
     btn: {
-        backgroundColor: colors.darkBlue,
+        backgroundColor: palette.darkBlue,
         padding: 14,
         borderRadius: 30,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     btnText: {
-        color: colors.white,
-        fontWeight: "700",
+        color: palette.white,
+        fontWeight: '700',
     },
     biometricBtn: {
-        display: "flex",
-        flexDirection: "row",
+        display: 'flex',
+        flexDirection: 'row',
         gap: 10,
         borderWidth: 2,
-        borderColor: colors.darkBlue,
-        backgroundColor: "#F5F8FF",
+        borderColor: palette.darkBlue,
+        backgroundColor: '#F5F8FF',
         padding: 10,
         borderRadius: 30,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     biometricText: {
-        color: colors.darkBlue,
-        fontWeight: "700",
+        color: palette.darkBlue,
+        fontWeight: '700',
     },
     disabledBtn: {
         opacity: 0.5,
     },
     disabledText: {
-        color: colors.black,
+        color: palette.black,
     },
     helperText: {
-        textAlign: "center",
-        color: colors.black,
+        textAlign: 'center',
+        color: palette.black,
         lineHeight: 20,
     },
     linkText: {
         marginTop: 30,
-        textAlign: "center",
-        color: colors.black,
+        textAlign: 'center',
+        color: palette.black,
     },
     linkStrong: {
-        fontWeight: "bold",
-        color: colors.darkBlue,
+        fontWeight: 'bold',
+        color: palette.darkBlue,
     },
 });
+

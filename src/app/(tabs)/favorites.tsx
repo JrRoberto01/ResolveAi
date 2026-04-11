@@ -8,18 +8,18 @@ import { useFavorites } from '../../contexts/FavoritesContext';
 import { colors } from '../../style/colors';
 import { spacing } from '../../style/spacing';
 
+const categories = ['Todos', 'Em análise', 'Resolvidos'];
+
 export default function Favorites() {
   const { favorites } = useFavorites();
-  const [activeCategory, setActiveCategory] = useState('Todos');
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [searchText, setSearchText] = useState('');
-
-  const categories = ['Todos', 'Em análise', 'Resolvidos'];
 
   const filteredFavorites = favorites.filter((item) => {
     const matchCategory =
-      activeCategory === 'Todos' ||
-      (activeCategory === 'Em análise' && item.status?.toUpperCase() === 'EM ANÁLISE') ||
-      (activeCategory === 'Resolvidos' && item.status?.toUpperCase() === 'RESOLVIDO');
+      activeCategory === categories[0] ||
+      (activeCategory === categories[1] && item.status?.toUpperCase() === 'EM ANÁLISE') ||
+      (activeCategory === categories[2] && item.status?.toUpperCase() === 'RESOLVIDO');
 
     const matchSearch =
       !searchText.trim() ||

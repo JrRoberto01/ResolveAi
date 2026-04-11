@@ -1,19 +1,19 @@
-import colors from "@/style/colors";
-import { StyleSheet } from "react-native";
+import palette from '@/style/colors';
+import { StyleSheet } from 'react-native';
 
-export const noticeModalStyle = StyleSheet.create({
+export const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(28, 34, 55, 0.45)",
-        justifyContent: "center",
+        backgroundColor: 'rgba(28, 34, 55, 0.45)',
+        justifyContent: 'center',
         paddingHorizontal: 24,
     },
     card: {
-        backgroundColor: colors.white,
+        backgroundColor: palette.white,
         borderRadius: 28,
         padding: 24,
         gap: 16,
-        shadowColor: "#14213D",
+        shadowColor: '#14213D',
         shadowOpacity: 0.18,
         shadowOffset: { width: 0, height: 12 },
         shadowRadius: 24,
@@ -25,17 +25,17 @@ export const noticeModalStyle = StyleSheet.create({
         borderRadius: 999,
     },
     title: {
-        color: colors.black,
+        color: palette.black,
         fontSize: 22,
-        fontWeight: "700",
+        fontWeight: '700',
     },
     message: {
-        color: "#5F6472",
+        color: '#5F6472',
         fontSize: 15,
         lineHeight: 22,
     },
     actions: {
-        flexDirection: "row",
+        flexDirection: 'row',
         gap: 12,
     },
     button: {
@@ -43,24 +43,24 @@ export const noticeModalStyle = StyleSheet.create({
         minHeight: 48,
         borderRadius: 18,
         borderWidth: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         paddingHorizontal: 16,
     },
     primaryButton: {
-        backgroundColor: colors.darkBlue,
+        backgroundColor: palette.darkBlue,
     },
     secondaryButton: {
-        backgroundColor: colors.white,
+        backgroundColor: palette.white,
     },
     primaryText: {
-        color: colors.white,
-        fontWeight: "700",
+        color: palette.white,
+        fontWeight: '700',
         fontSize: 15,
     },
     secondaryText: {
-        color: colors.black,
-        fontWeight: "700",
+        color: palette.black,
+        fontWeight: '700',
         fontSize: 15,
     },
 });

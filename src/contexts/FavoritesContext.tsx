@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Ocorrencia } from '../components/CardOcorrencia';
 
 interface FavoritesContextData {
@@ -7,27 +7,26 @@ interface FavoritesContextData {
   isSupported: (id: string) => boolean;
 }
 
-const FavoritesContext = createContext<FavoritesContextData>({} as FavoritesContextData);
+const FavoritesContext = createContext<FavoritesContextData | null>(null);
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<Ocorrencia[]>([]);
 
-  const toggleSupport = useCallback((item: Ocorrencia) => {
-    setFavorites((prev) => {
-      const exists = prev.find((f) => f.id === item.id);
-      if (exists) {
-        return prev.filter((f) => f.id !== item.id);
-      }
-      return [{ ...item, likes: 1 }, ...prev];
-    });
-  }, []);
+  function toggleSupport(item: Ocorrencia) {
+    setFavorites((currentFavorites) => {
+      const exists = currentFavorites.find((favorite) => favorite.id === item.id);
 
-  const isSupported = useCallback(
-    (id: string) => {
-      return favorites.some((f) => f.id === id);
-    },
-    [favorites]
-  );
+      if (exists) {
+        return currentFavorites.filter((favorite) => favorite.id !== item.id);
+      }
+
+      return [{ ...item, likes: 1 }, ...currentFavorites];
+    });
+  }
+
+  function isSupported(id: string) {
+    return favorites.some((favorite) => favorite.id === id);
+  }
 
   return (
     <FavoritesContext.Provider value={{ favorites, toggleSupport, isSupported }}>
@@ -38,8 +37,10 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
 export function useFavorites() {
   const context = useContext(FavoritesContext);
+
   if (!context) {
     throw new Error('useFavorites must be used within a FavoritesProvider');
   }
+
   return context;
 }

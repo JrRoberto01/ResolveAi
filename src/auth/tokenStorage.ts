@@ -1,9 +1,9 @@
-﻿import * as SecureStore from "expo-secure-store";
+import * as SecureStore from 'expo-secure-store';
 
-const ACCESS_TOKEN_KEY = "access_token";
-const REFRESH_TOKEN_KEY = "refresh_token";
-const BIOMETRIC_CREDENTIALS_KEY = "biometric_credentials";
-const BIOMETRIC_ENABLED_KEY = "biometric_enabled";
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+const BIOMETRIC_CREDENTIALS_KEY = 'biometric_credentials';
+const BIOMETRIC_ENABLED_KEY = 'biometric_enabled';
 
 export type AuthSession = {
     accessToken: string;
@@ -49,23 +49,19 @@ export async function getToken() {
     return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
 }
 
-export async function getRefreshToken() {
-    return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-}
-
 export async function setBiometricCredentials(credentials: BiometricCredentials) {
     await SecureStore.setItemAsync(BIOMETRIC_CREDENTIALS_KEY, JSON.stringify(credentials), {
         requireAuthentication: true,
-        authenticationPrompt: "Faça Login ativar o login com biometria",
+        authenticationPrompt: 'Faça Login ativar o login com biometria',
     });
 
-    await SecureStore.setItemAsync(BIOMETRIC_ENABLED_KEY, "true");
+    await SecureStore.setItemAsync(BIOMETRIC_ENABLED_KEY, 'true');
 }
 
 export async function getBiometricCredentials() {
     const credentials = await SecureStore.getItemAsync(BIOMETRIC_CREDENTIALS_KEY, {
         requireAuthentication: true,
-        authenticationPrompt: "Faça Login para entrar com biometria",
+        authenticationPrompt: 'Faça Login para entrar com biometria',
     });
 
     if (!credentials) {
@@ -77,7 +73,7 @@ export async function getBiometricCredentials() {
 
 export async function hasBiometricCredentials() {
     const enabled = await SecureStore.getItemAsync(BIOMETRIC_ENABLED_KEY);
-    return enabled === "true";
+    return enabled === 'true';
 }
 
 export async function clearBiometricCredentials() {
