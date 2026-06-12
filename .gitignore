@@ -41,3 +41,6 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Imagens locais do figma
+imagens_figma/
