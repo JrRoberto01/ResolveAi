@@ -3,7 +3,7 @@ import { colors } from '../../style/colors';
 import { radii, spacing } from '../../style/spacing';
 
 export const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  'EM ANÁLISE': { bg: '#E6F0FA', text: '#0066CC' },
+  'EM ANALISE': { bg: '#E6F0FA', text: '#0066CC' },
   PENDENTE: { bg: '#FFF3E0', text: '#E65100' },
   RESOLVIDO: { bg: '#E8F5E9', text: '#2E7D32' },
 };

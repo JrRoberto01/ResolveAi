@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Ocorrencia } from '../components/CardOcorrencia';
+import { isFavoriteSupported, toggleFavoriteSupport } from './favorites.utils';
 
 interface FavoritesContextData {
   favorites: Ocorrencia[];
@@ -13,19 +14,11 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<Ocorrencia[]>([]);
 
   function toggleSupport(item: Ocorrencia) {
-    setFavorites((currentFavorites) => {
-      const exists = currentFavorites.find((favorite) => favorite.id === item.id);
-
-      if (exists) {
-        return currentFavorites.filter((favorite) => favorite.id !== item.id);
-      }
-
-      return [{ ...item, likes: 1 }, ...currentFavorites];
-    });
+    setFavorites((currentFavorites) => toggleFavoriteSupport(currentFavorites, item));
   }
 
   function isSupported(id: string) {
-    return favorites.some((favorite) => favorite.id === id);
+    return isFavoriteSupported(favorites, id);
   }
 
   return (

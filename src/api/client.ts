@@ -7,7 +7,7 @@ import {
   setAuthSession,
 } from "../auth/tokenStorage";
 
-const API_BASE_URL = "https://resolveai-backend-production-5eb2.up.railway.app";
+const API_BASE_URL = "http://192.168.18.4:3000";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

@@ -14,10 +14,14 @@ interface FavoriteCardProps {
 export function FavoriteCard({ data, onPressDetails }: FavoriteCardProps) {
   const defaultImage = require('../../../assets/images/icon.png');
   const hasPhotos = data.photos && data.photos.length > 0;
-  const statusStyle = STATUS_COLORS[data.status?.toUpperCase() || ''] || STATUS_COLORS['EM ANÁLISE'];
+  const statusStyle = STATUS_COLORS[data.status?.toUpperCase() || ''] || STATUS_COLORS['EM ANALISE'];
 
   return (
-    <View style={[globalStyles.card, styles.card]}>
+    <TouchableOpacity
+      style={[globalStyles.card, styles.card]}
+      activeOpacity={onPressDetails ? 0.92 : 1}
+      onPress={onPressDetails}
+    >
       <View style={styles.content}>
         {data.status ? (
           <View style={styles.statusIndicator}>
@@ -32,8 +36,8 @@ export function FavoriteCard({ data, onPressDetails }: FavoriteCardProps) {
 
         <Text style={styles.subtitle} numberOfLines={1}>
           {data.timeAgo}
-          {typeof data.location === 'string' && data.location ? ` • ${data.location}` : ''}
-          {typeof data.location === 'object' && data.location?.address ? ` • ${data.location.address}` : ''}
+          {typeof data.location === 'string' && data.location ? ` - ${data.location}` : ''}
+          {typeof data.location === 'object' && data.location?.address ? ` - ${data.location.address}` : ''}
         </Text>
 
         <View style={styles.footer}>
@@ -55,7 +59,6 @@ export function FavoriteCard({ data, onPressDetails }: FavoriteCardProps) {
         style={styles.image}
         resizeMode="cover"
       />
-    </View>
+    </TouchableOpacity>
   );
 }
-

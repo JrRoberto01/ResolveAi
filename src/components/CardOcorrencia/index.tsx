@@ -27,16 +27,19 @@ export interface Ocorrencia {
   photos?: string[];
   status?: string;
   anonymous?: boolean;
+  supportedByMe?: boolean;
+  canEdit?: boolean;
 }
 
 interface CardOcorrenciaProps {
   data: Ocorrencia;
+  onPress?: () => void;
   onPressSupport?: () => void;
   onPressEdit?: () => void;
   isSupported?: boolean;
 }
 
-export function CardOcorrencia({ data, onPressSupport, onPressEdit, isSupported = false }: CardOcorrenciaProps) {
+export function CardOcorrencia({ data, onPress, onPressSupport, onPressEdit, isSupported = false }: CardOcorrenciaProps) {
   const defaultImage = require('../../../assets/images/icon.png');
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -67,7 +70,11 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit, isSupported 
   };
 
   return (
-    <View style={[globalStyles.card, { padding: 0, overflow: 'hidden' }]}>
+    <TouchableOpacity
+      style={[globalStyles.card, { padding: 0, overflow: 'hidden' }]}
+      activeOpacity={onPress ? 0.92 : 1}
+      onPress={onPress}
+    >
       <TouchableOpacity
         style={styles.imageContainer}
         activeOpacity={hasPhotos ? 0.8 : 1}
@@ -130,7 +137,9 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit, isSupported 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.actionButton} onPress={onPressSupport}>
             <Ionicons name={isSupported ? 'thumbs-up' : 'thumbs-up-outline'} size={18} color={colors.primary} />
-            <Text style={styles.actionTextPrimary}>{isSupported ? 'Apoiado (1)' : 'Apoiar'}</Text>
+            <Text style={styles.actionTextPrimary}>
+              {isSupported ? `Apoiado (${data.likes})` : `Apoiar (${data.likes})`}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton}>
@@ -198,7 +207,6 @@ export function CardOcorrencia({ data, onPressSupport, onPressEdit, isSupported 
           </View>
         </View>
       </Modal>
-    </View>
+    </TouchableOpacity>
   );
 }
-
