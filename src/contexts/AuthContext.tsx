@@ -1,4 +1,4 @@
-import * as LocalAuthentication from 'expo-local-authentication';
+﻿import * as LocalAuthentication from 'expo-local-authentication';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
     signIn as signInApi,

@@ -1,10 +1,10 @@
-import NoticeModal from '@/components/NoticeModal';
+﻿import NoticeModal from '@/components/NoticeModal';
 import { useAuth } from '@/contexts/AuthContext';
 import palette from '@/style/colors';
 import { globalStyles } from '@/style/global';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ModalState = {
@@ -34,6 +34,8 @@ const hiddenModalState: ModalState = {
         onPress: () => undefined,
     },
 };
+
+const appLogo = require('../../../assets/images/logo.png');
 
 export default function Signup() {
     const {
@@ -114,11 +116,11 @@ export default function Signup() {
 
                             navigateToTabs();
                         } catch (err: any) {
-                            const msg = err?.message || 'Não foi possí­vel ativar o login com biometria.';
+                            const msg = err?.message || 'Não foi possível ativar o login com biometria.';
 
                             setModal({
                                 visible: true,
-                                title: 'Não foi possí­vel ativar',
+                                title: 'Não foi possível ativar',
                                 message: msg,
                                 variant: 'error',
                                 primaryAction: {
@@ -185,6 +187,8 @@ export default function Signup() {
 
     return (
         <SafeAreaView style={[globalStyles.container, { justifyContent: 'center' }]}>
+            <Image source={appLogo} style={style.logo} resizeMode="contain" />
+
             <TextInput
                 style={style.input}
                 placeholder="Digite seu nome"
@@ -221,7 +225,7 @@ export default function Signup() {
                 <Text style={style.btnText}>{loading ? 'Criando conta...' : 'Criar conta'}</Text>
             </Pressable>
 
-            <Text style={style.linkText}>JÃ¡ possui uma conta?<Link href="/(auth)/sign-in" style={style.linkStrong}> Entre agora</Link></Text>
+            <Text style={style.linkText}>Já possui uma conta?<Link href="/(auth)/sign-in" style={style.linkStrong}> Entre agora</Link></Text>
 
             <NoticeModal
                 visible={modal.visible}
@@ -237,6 +241,11 @@ export default function Signup() {
 }
 
 const style = StyleSheet.create({
+    logo: {
+        width: 250,
+        height: 250,
+        alignSelf: 'center',
+    },
     input: {
         borderWidth: 1,
         borderColor: palette.darkGrey,

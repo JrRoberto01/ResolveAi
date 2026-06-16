@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -74,13 +74,13 @@ function formatCommentTime(date: string) {
   const diffInMinutes = Math.max(0, Math.floor((Date.now() - createdAt) / 60000));
 
   if (diffInMinutes < 1) return 'Agora';
-  if (diffInMinutes < 60) return `Ha ${diffInMinutes}min`;
+  if (diffInMinutes < 60) return `Há ${diffInMinutes}min`;
 
   const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `Ha ${diffInHours}h`;
+  if (diffInHours < 24) return `Há ${diffInHours}h`;
 
   const diffInDays = Math.floor(diffInHours / 24);
-  return `Ha ${diffInDays}d`;
+  return `Há ${diffInDays}d`;
 }
 
 function wasCommentEdited(comment: ApiOccurrenceComment) {
@@ -122,7 +122,7 @@ export function OccurrenceDetails({
       } catch (err: any) {
         Toast.show({
           type: 'error',
-          text1: 'Nao foi possivel carregar comentarios',
+          text1: 'Não foi possível carregar comentários',
           text2: err?.friendlyMessage || err?.message,
         });
       } finally {
@@ -143,20 +143,20 @@ export function OccurrenceDetails({
     () => [
       {
         id: 'analysis',
-        title: occurrence.status === 'RESOLVIDO' ? 'Resolvido' : 'Em analise',
-        meta: 'Ha 30 minutos - Prefeitura',
+        title: occurrence.status === 'RESOLVIDO' ? 'Resolvido' : 'Em análise',
+        meta: 'Há 30 minutos - Prefeitura',
         description:
           occurrence.status === 'RESOLVIDO'
             ? 'A equipe informou que o problema foi resolvido.'
-            : 'A solicitacao foi encaminhada para a Secretaria de Obras.',
+            : 'A solicitação foi encaminhada para a Secretaria de Obras.',
         icon: occurrence.status === 'RESOLVIDO' ? 'checkmark' : 'hourglass-outline',
         tone: occurrence.status === 'RESOLVIDO' ? 'primary' : 'warning',
       },
       {
         id: 'posted',
         title: 'Postado',
-        meta: `${occurrence.timeAgo} - Por Voce`,
-        description: 'A ocorrencia foi registrada e ja pode receber apoio da comunidade.',
+        meta: `${occurrence.timeAgo} - Por Você`,
+        description: 'A ocorrência foi registrada e já pode receber apoio da comunidade.',
         icon: 'megaphone-outline',
         tone: 'primary',
       },
@@ -184,7 +184,7 @@ export function OccurrenceDetails({
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Nao foi possivel comentar',
+        text1: 'Não foi possível comentar',
         text2: err?.friendlyMessage || err?.message,
       });
     } finally {
@@ -219,7 +219,7 @@ export function OccurrenceDetails({
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Nao foi possivel editar',
+        text1: 'Não foi possível editar',
         text2: err?.friendlyMessage || err?.message,
       });
     } finally {
@@ -228,7 +228,7 @@ export function OccurrenceDetails({
   }
 
   function confirmDeleteComment(commentId: number) {
-    Alert.alert('Excluir comentario', 'Tem certeza que deseja excluir este comentario?', [
+    Alert.alert('Excluir comentário', 'Tem certeza que deseja excluir este comentário?', [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Excluir',
@@ -260,7 +260,7 @@ export function OccurrenceDetails({
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Nao foi possivel excluir',
+        text1: 'Não foi possível excluir',
         text2: err?.friendlyMessage || err?.message,
       });
     } finally {
@@ -271,7 +271,7 @@ export function OccurrenceDetails({
   function handleShare() {
     void Share.share({
       title: occurrence.title,
-      message: `${occurrence.title}\n${occurrence.description}\nLocalizacao: ${locationText}`,
+      message: `${occurrence.title}\n${occurrence.description}\nLocalização: ${locationText}`,
     });
   }
 
@@ -290,7 +290,7 @@ export function OccurrenceDetails({
         <View style={styles.section}>
           <View style={styles.chipRow}>
             <View style={styles.statusChip}>
-              <Text style={styles.statusText}>{occurrence.status || 'EM ANALISE'}</Text>
+              <Text style={styles.statusText}>{occurrence.status || 'EM ANÁLISE'}</Text>
             </View>
             <View style={styles.categoryChip}>
               <Text style={styles.categoryText}>{occurrence.category}</Text>
@@ -310,7 +310,7 @@ export function OccurrenceDetails({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Localizacao exata</Text>
+          <Text style={styles.sectionTitle}>Localização exata</Text>
           <View style={styles.mapPreview}>
             <View style={styles.mapBase} />
             <View style={styles.mapPatchOne} />
@@ -341,7 +341,7 @@ export function OccurrenceDetails({
 
         <TouchableOpacity style={styles.supportButton} onPress={onPressSupport} activeOpacity={0.86}>
           <Ionicons name={isSupported ? 'checkmark-circle-outline' : 'hand-left-outline'} size={18} color={colors.surface} />
-          <Text style={styles.supportText}>{isSupported ? 'Ocorrencia apoiada' : 'Apoiar a ocorrencia'}</Text>
+          <Text style={styles.supportText}>{isSupported ? 'Ocorrencia apoiada' : 'Apoiar a ocorrência'}</Text>
         </TouchableOpacity>
 
         <View style={styles.section}>
@@ -368,17 +368,17 @@ export function OccurrenceDetails({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Comentarios da Comunidade</Text>
+          <Text style={styles.sectionTitle}>Comentários da Comunidade</Text>
           {commentsLoading ? (
             <View style={styles.commentsState}>
               <ActivityIndicator color={colors.primary} />
-              <Text style={styles.commentsStateText}>Carregando comentarios...</Text>
+              <Text style={styles.commentsStateText}>Carregando comentários...</Text>
             </View>
           ) : null}
 
           {!commentsLoading && comments.length === 0 ? (
             <View style={styles.commentsState}>
-              <Text style={styles.commentsStateText}>Nenhum comentario ainda.</Text>
+              <Text style={styles.commentsStateText}>Nenhum comentário ainda.</Text>
             </View>
           ) : null}
 
@@ -475,7 +475,7 @@ export function OccurrenceDetails({
             </View>
             <TextInput
               style={styles.commentInput}
-              placeholder="Escreva um comentario..."
+              placeholder="Escreva um comentário..."
               placeholderTextColor={colors.textSecondary}
               value={commentText}
               onChangeText={setCommentText}

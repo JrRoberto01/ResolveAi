@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+﻿import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { File } from "expo-file-system";
 import React, { useCallback, useState } from "react";
@@ -39,7 +39,7 @@ type OccurrenceFormProps = {
 const ALL_CATEGORIES = [
   "Todos",
   "Buraco na via",
-  "Iluminacao publica",
+  "Iluminação pública",
   "Lixo / Entulho",
   "Vazamento",
   "Alagamento",
@@ -48,7 +48,7 @@ const ALL_CATEGORIES = [
 const FORM_CATEGORIES = ALL_CATEGORIES.filter((category) => category !== "Todos");
 
 const statusLabels: Record<ApiOccurrence["status"], string> = {
-  IN_ANALYSIS: "EM ANALISE",
+  IN_ANALYSIS: "EM ANÁLISE",
   RESOLVED: "RESOLVIDO",
   REJECTED: "REJEITADO",
 };
@@ -145,7 +145,7 @@ function OccurrenceForm({
 
   async function handleSave() {
     if (!title.trim()) {
-      Toast.show({ type: "error", text1: "Informe um titulo" });
+      Toast.show({ type: "error", text1: "Informe um título" });
       return;
     }
 
@@ -172,11 +172,11 @@ function OccurrenceForm({
         description,
         category,
         anonymous: isAnonymous,
-        location: location ?? "Avenida Ficticia, 123",
+        location: location ?? "Avenida Fictícia, 123",
         likes: 0,
         comments: 0,
         timeAgo: "Agora mesmo",
-        status: "EM ANALISE",
+        status: "EM ANÁLISE",
         photos,
         imageUrl: photos.length > 0 ? { uri: photos[0] } : undefined,
       });
@@ -191,8 +191,8 @@ function OccurrenceForm({
     }
 
     Alert.alert(
-      "Excluir ocorrencia",
-      "Tem certeza que deseja apagar esta ocorrencia?",
+      "Excluir ocorrência",
+      "Tem certeza que deseja apagar esta ocorrência?",
       [
         { text: "Cancelar", style: "cancel" },
         {
@@ -208,21 +208,21 @@ function OccurrenceForm({
 
   return (
     <View style={{ flex: 1, backgroundColor: globalStyles.container.backgroundColor }}>
-      <Header title={isEditing ? "Editar ocorrencia" : "Nova ocorrencia"} showBack onBack={onBack} />
+      <Header title={isEditing ? "Editar ocorrência" : "Nova ocorrência"} showBack onBack={onBack} />
 
       <ScrollView contentContainerStyle={{ padding: spacing.md }}>
         <AnonymousSwitch value={isAnonymous} onValueChange={setIsAnonymous} />
 
         <Input
-          label="Titulo do problema"
+          label="Título do problema"
           placeholder="Ex: Buraco no meio da rua"
           value={title}
           onChangeText={setTitle}
         />
 
         <Input
-          label="Descricao detalhada"
-          placeholder="Descreva o que esta acontecendo e como isso afeta a vizinhanca..."
+          label="Descrição detalhada"
+          placeholder="Descreva o que está acontecendo e como isso afeta a vizinhança..."
           value={description}
           onChangeText={setDescription}
           multiline
@@ -236,7 +236,7 @@ function OccurrenceForm({
         />
 
         <PhotoUploadBox
-          label="Evidencias (fotos)"
+          label="Evidências (fotos)"
           onPress={() => setCameraOpen(true)}
           photos={photos}
         />
@@ -244,14 +244,14 @@ function OccurrenceForm({
         <LocationPicker onLocationSelect={setLocation} initialLocation={location} />
 
         <Button
-          title={saving ? "Salvando..." : isEditing ? "Salvar alteracoes" : "Publicar ocorrencia"}
+          title={saving ? "Salvando..." : isEditing ? "Salvar alterações" : "Publicar ocorrência"}
           onPress={handleSave}
           style={{ marginTop: spacing.md, marginBottom: isEditing ? spacing.md : spacing.xxl }}
         />
 
         {isEditing ? (
           <Button
-            title="Excluir ocorrencia"
+            title="Excluir ocorrência"
             variant="danger"
             onPress={handleDelete}
             style={{ marginBottom: spacing.xxl }}
@@ -291,7 +291,7 @@ export default function Index() {
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Erro ao carregar ocorrencias",
+        text1: "Erro ao carregar ocorrências",
         text2: err?.friendlyMessage || err?.message,
       });
     } finally {
@@ -309,11 +309,11 @@ export default function Index() {
       const created = await createOccurrence(await cardToPayload(newItem));
       setListItems((currentItems) => [apiOccurrenceToCard(created), ...currentItems]);
       setIsAdding(false);
-      Toast.show({ type: "success", text1: "Sucesso", text2: "Sua ocorrencia foi publicada!" });
+      Toast.show({ type: "success", text1: "Sucesso", text2: "Sua ocorrência foi publicada!" });
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Nao foi possivel publicar",
+        text1: "Não foi possível publicar",
         text2: err?.friendlyMessage || err?.message,
       });
     }
@@ -328,11 +328,11 @@ export default function Index() {
         currentItems.map((item) => (item.id === updatedCard.id ? updatedCard : item)),
       );
       setEditingItem(null);
-      Toast.show({ type: "success", text1: "Atualizada", text2: "A ocorrencia foi atualizada!" });
+      Toast.show({ type: "success", text1: "Atualizada", text2: "A ocorrência foi atualizada!" });
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Nao foi possivel atualizar",
+        text1: "Não foi possível atualizar",
         text2: err?.friendlyMessage || err?.message,
       });
     }
@@ -343,11 +343,11 @@ export default function Index() {
       await deleteOccurrence(Number(id));
       setListItems((currentItems) => currentItems.filter((item) => item.id !== id));
       setEditingItem(null);
-      Toast.show({ type: "success", text1: "Excluida", text2: "A ocorrencia foi removida." });
+      Toast.show({ type: "success", text1: "Excluída", text2: "A ocorrência foi removida." });
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Nao foi possivel excluir",
+        text1: "Não foi possível excluir",
         text2: err?.friendlyMessage || err?.message,
       });
     }
@@ -365,7 +365,7 @@ export default function Index() {
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Nao foi possivel apoiar",
+        text1: "Não foi possível apoiar",
         text2: err?.friendlyMessage || err?.message,
       });
     }
@@ -426,7 +426,7 @@ export default function Index() {
 
       <View style={{ padding: spacing.md, paddingBottom: 0 }}>
         <SearchBar
-          placeholder="Buscar ocorrencias..."
+          placeholder="Buscar ocorrências..."
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -454,7 +454,7 @@ export default function Index() {
               {loading ? (
                 <ActivityIndicator />
               ) : (
-                <Text style={{ textAlign: "center" }}>Nenhuma ocorrencia encontrada.</Text>
+                <Text style={{ textAlign: "center" }}>Nenhuma ocorrência encontrada.</Text>
               )}
             </View>
           }

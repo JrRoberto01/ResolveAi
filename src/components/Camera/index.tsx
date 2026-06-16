@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import React, { useRef, useState } from 'react';
 import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
@@ -48,7 +48,7 @@ export function Camera({ onCapture, onClose }: CameraComponentProps) {
         if (!cameraRef.current) return;
 
         try {
-            const photo = await cameraRef.current.takePictureAsync({ quality: 0.35 });
+            const photo = await cameraRef.current.takePictureAsync({ quality: 0.2 });
 
             if (photo) {
                 setCapturedPhoto(photo.uri);

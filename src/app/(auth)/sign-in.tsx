@@ -1,11 +1,11 @@
-import NoticeModal from '@/components/NoticeModal';
+﻿import NoticeModal from '@/components/NoticeModal';
 import { useAuth } from '@/contexts/AuthContext';
 import palette from '@/style/colors';
 import { globalStyles } from '@/style/global';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ModalState = {
@@ -35,6 +35,8 @@ const hiddenModalState: ModalState = {
         onPress: () => undefined,
     },
 };
+
+const appLogo = require('../../../assets/images/logo.png');
 
 export default function Signin() {
     const {
@@ -120,11 +122,11 @@ export default function Signin() {
 
                             navigateToTabs();
                         } catch (err: any) {
-                            const msg = err?.message || 'Não foi possí­vel ativar o login com biometria.';
+                            const msg = err?.message || 'Não foi possível ativar o login com biometria.';
 
                             setModal({
                                 visible: true,
-                                title: 'Não foi possí­vel ativar',
+                                title: 'Não foi possível ativar',
                                 message: msg,
                                 variant: 'error',
                                 primaryAction: {
@@ -168,7 +170,7 @@ export default function Signin() {
             await signInWithBiometrics();
             navigateToTabs();
         } catch (err: any) {
-            const msg = err?.message || 'Não foi possí­vel entrar com biometria.';
+            const msg = err?.message || 'Não foi possível entrar com biometria.';
             showErrorModal(msg);
         } finally {
             setLoading(false);
@@ -227,6 +229,8 @@ export default function Signin() {
 
     return (
         <SafeAreaView style={[globalStyles.container, { justifyContent: 'center' }]}>
+            <Image source={appLogo} style={style.logo} resizeMode="contain" />
+
             <TextInput
                 style={style.input}
                 placeholder="Digite seu e-mail"
@@ -283,6 +287,11 @@ export default function Signin() {
 }
 
 const style = StyleSheet.create({
+    logo: {
+        width: 250,
+        height: 250,
+        alignSelf: 'center',
+    },
     input: {
         borderWidth: 1,
         borderColor: palette.darkGrey,

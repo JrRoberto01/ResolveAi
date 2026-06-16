@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
@@ -105,7 +105,7 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
                     {markerCoord ? <Marker coordinate={markerCoord} /> : null}
                 </MapView>
             </View>
-            <Text style={styles.hint}>{addressText ? `📍 ${addressText}` : 'Toque no mapa para marcar o local exato.'}</Text>
+            <Text style={styles.hint}>{addressText ? `Local: ${addressText}` : 'Toque no mapa para marcar o local exato.'}</Text>
         </View>
     );
 }

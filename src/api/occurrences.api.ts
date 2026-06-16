@@ -57,6 +57,62 @@ export type OccurrenceFilters = {
   status?: OccurrenceStatus;
 };
 
+export type RankingPeriod = 7 | 30 | 60;
+
+export type OccurrenceRankingParams = {
+  days?: RankingPeriod;
+  latitude?: number;
+  longitude?: number;
+  rangeKm?: number;
+};
+
+export type OccurrenceRanking = {
+  filters: {
+    days: RankingPeriod;
+    rangeKm: number;
+    latitude?: number;
+    longitude?: number;
+  };
+  summary: {
+    created: number;
+    supports: number;
+    resolved: number;
+    topCategory: string;
+  };
+  categoryRanking: Array<{
+    category: string;
+    total: number;
+  }>;
+  topOccurrences: Array<{
+    id: number;
+    title: string;
+    category: string;
+    address: string | null;
+    supportCount: number;
+    commentsCount: number;
+    status: OccurrenceStatus;
+    createdAt: string;
+  }>;
+  engagedUsers: Array<{
+    userId: number;
+    name: string;
+    image: string | null;
+    created: number;
+    supports: number;
+    resolved: number;
+    score: number;
+  }>;
+  featuredUsers: Array<{
+    userId: number;
+    name: string;
+    image: string | null;
+    created: number;
+    supports: number;
+    resolved: number;
+    score: number;
+  }>;
+};
+
 export async function getOccurrences(filters?: OccurrenceFilters) {
   const { data } = await api.get<ApiOccurrence[]>('/occurrences', {
     params: filters,
@@ -65,8 +121,21 @@ export async function getOccurrences(filters?: OccurrenceFilters) {
   return data;
 }
 
+export async function getOccurrence(id: number) {
+  const { data } = await api.get<ApiOccurrence>(`/occurrences/${id}`);
+  return data;
+}
+
 export async function getSupportedOccurrences() {
   const { data } = await api.get<ApiOccurrence[]>('/occurrences/supported/me');
+  return data;
+}
+
+export async function getOccurrenceRanking(params?: OccurrenceRankingParams) {
+  const { data } = await api.get<OccurrenceRanking>('/occurrences/ranking', {
+    params,
+  });
+
   return data;
 }
 

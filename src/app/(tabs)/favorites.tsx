@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/native';
+﻿import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
@@ -17,10 +17,10 @@ import { colors } from '../../style/colors';
 import { spacing } from '../../style/spacing';
 import Toast from 'react-native-toast-message';
 
-const categories = ['Todos', 'Em analise', 'Resolvidos'];
+const categories = ['Todos', 'Em análise', 'Resolvidos'];
 
 const statusLabels: Record<ApiOccurrence['status'], string> = {
-  IN_ANALYSIS: 'EM ANALISE',
+  IN_ANALYSIS: 'EM ANÁLISE',
   RESOLVED: 'RESOLVIDO',
   REJECTED: 'REJEITADO',
 };
@@ -95,7 +95,7 @@ export default function Favorites() {
   const filteredFavorites = favorites.filter((item) => {
     const matchCategory =
       activeCategory === categories[0] ||
-      (activeCategory === categories[1] && item.status?.toUpperCase() === 'EM ANALISE') ||
+      (activeCategory === categories[1] && item.status?.toUpperCase() === 'EM ANÁLISE') ||
       (activeCategory === categories[2] && item.status?.toUpperCase() === 'RESOLVIDO');
 
     const matchSearch =
@@ -125,7 +125,7 @@ export default function Favorites() {
     } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Nao foi possivel apoiar',
+        text1: 'Não foi possível apoiar',
         text2: err?.friendlyMessage || err?.message,
       });
     }
@@ -196,7 +196,7 @@ export default function Favorites() {
                   Nenhum favorito encontrado.
                 </Text>
                 <Text style={styles.emptySubtext}>
-                  Apoie ocorrencias no feed para ve-las aqui.
+                  Apoie ocorrências no feed para vê-las aqui.
                 </Text>
               </>
             )}
