@@ -7,7 +7,7 @@ import {
   setAuthSession,
 } from "../auth/tokenStorage";
 
-const API_BASE_URL = "http://192.168.10.136:3000";
+const API_BASE_URL = "http://192.168.18.8:3000";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

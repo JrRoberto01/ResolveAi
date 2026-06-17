@@ -13,7 +13,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import { getPublicProfile, type ProfileSummary, type PublicProfileAuthor } from '../../api/profile.api';
 import {
   createOccurrenceComment,
   deleteOccurrenceComment,
@@ -22,8 +24,13 @@ import {
   updateOccurrenceComment,
 } from '../../api/occurrences.api';
 import { colors } from '../../style/colors';
+import { styles as profileStyles } from '../../style/profile_style';
 import { Header } from '../Header';
 import type { Ocorrencia } from '../CardOcorrencia';
+import { OccurrenceCard } from '../profile/OccurrenceCard';
+import { ProfileHeader } from '../profile/ProfileHeader';
+import { ProfileInfo } from '../profile/ProfileInfo';
+import { StatCard } from '../profile/StatCard';
 import { styles } from './OccurrenceDetailsStyle';
 
 type TimelineItem = {
@@ -90,6 +97,83 @@ function wasCommentEdited(comment: ApiOccurrenceComment) {
   return Number.isFinite(createdAt) && Number.isFinite(modifiedAt) && modifiedAt - createdAt > 1000;
 }
 
+const profileStatusLabels: Record<ProfileSummary['occurrences'][number]['status'], 'Em análise' | 'Resolvido' | 'Rejeitado'> = {
+  IN_ANALYSIS: 'Em análise',
+  RESOLVED: 'Resolvido',
+  REJECTED: 'Rejeitado',
+};
+
+const publicOccurrenceDetailStatusLabels: Record<ProfileSummary['occurrences'][number]['status'], string> = {
+  IN_ANALYSIS: 'EM ANÁLISE',
+  RESOLVED: 'RESOLVIDO',
+  REJECTED: 'REJEITADO',
+};
+
+function formatOccurrenceTimeAgo(date: string) {
+  const createdAt = new Date(date).getTime();
+  const diffInMinutes = Math.max(0, Math.floor((Date.now() - createdAt) / 60000));
+
+  if (diffInMinutes < 1) return 'Agora mesmo';
+  if (diffInMinutes < 60) return `${diffInMinutes} min`;
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays}d`;
+}
+
+function formatProfileLocation(city?: string | null, state?: string | null) {
+  return [city, state].filter(Boolean).join(', ') || undefined;
+}
+
+function formatProfileMemberSince(date?: string | null) {
+  if (!date) {
+    return undefined;
+  }
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return undefined;
+  }
+
+  const formattedDate = new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  }).format(parsedDate);
+
+  return `Membro desde ${formattedDate}`;
+}
+
+function profileOccurrenceToDetails(profileOccurrence: ProfileSummary['occurrences'][number]): Ocorrencia {
+  const hasLocation = profileOccurrence.latitude !== null && profileOccurrence.longitude !== null;
+  const location = hasLocation
+    ? {
+      latitude: profileOccurrence.latitude,
+      longitude: profileOccurrence.longitude,
+      address: profileOccurrence.address ?? undefined,
+    }
+    : profileOccurrence.address ?? 'Local marcado no mapa';
+
+  return {
+    id: String(profileOccurrence.id),
+    title: profileOccurrence.title,
+    description: profileOccurrence.description ?? '',
+    category: profileOccurrence.category,
+    anonymous: profileOccurrence.anonymous,
+    location,
+    likes: profileOccurrence.supportCount,
+    comments: profileOccurrence.commentsCount,
+    timeAgo: formatOccurrenceTimeAgo(profileOccurrence.createdAt),
+    status: publicOccurrenceDetailStatusLabels[profileOccurrence.status],
+    photos: profileOccurrence.photos,
+    imageUrl: profileOccurrence.photos.length > 0 ? { uri: profileOccurrence.photos[0] } : undefined,
+    supportedByMe: profileOccurrence.supportedByMe,
+    canEdit: profileOccurrence.canEdit,
+  };
+}
+
 export function OccurrenceDetails({
   occurrence,
   isSupported = false,
@@ -105,6 +189,10 @@ export function OccurrenceDetails({
   const [editingCommentText, setEditingCommentText] = useState('');
   const [savingCommentId, setSavingCommentId] = useState<number | null>(null);
   const [deletingCommentId, setDeletingCommentId] = useState<number | null>(null);
+  const [selectedAuthorProfile, setSelectedAuthorProfile] = useState<ProfileSummary | null>(null);
+  const [selectedPublicOccurrence, setSelectedPublicOccurrence] = useState<Ocorrencia | null>(null);
+  const [publicProfileLoading, setPublicProfileLoading] = useState(false);
+  const [showAllPublicOccurrences, setShowAllPublicOccurrences] = useState(false);
   const locationText = getLocationText(occurrence.location);
 
   useEffect(() => {
@@ -275,7 +363,108 @@ export function OccurrenceDetails({
     });
   }
 
+  async function handleOpenAuthorProfile(author: PublicProfileAuthor) {
+    try {
+      setPublicProfileLoading(true);
+      setSelectedPublicOccurrence(null);
+      setSelectedAuthorProfile(await getPublicProfile(author));
+      setShowAllPublicOccurrences(false);
+    } catch (err: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Não foi possível carregar o perfil',
+        text2: err?.friendlyMessage || err?.message,
+      });
+    } finally {
+      setPublicProfileLoading(false);
+    }
+  }
+
   const totalComments = commentsLoading && comments.length === 0 ? occurrence.comments : comments.length;
+  const publicProfileUser = selectedAuthorProfile?.user;
+  const sortedPublicOccurrences = [...(selectedAuthorProfile?.occurrences ?? [])].sort(
+    (firstOccurrence, secondOccurrence) =>
+      new Date(secondOccurrence.createdAt).getTime() - new Date(firstOccurrence.createdAt).getTime(),
+  );
+  const visiblePublicOccurrences = showAllPublicOccurrences
+    ? sortedPublicOccurrences
+    : sortedPublicOccurrences.slice(0, 2);
+  const hasMorePublicOccurrences = sortedPublicOccurrences.length > 2;
+
+  if (publicProfileLoading) {
+    return (
+      <SafeAreaView style={profileStyles.container}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={profileStyles.scrollContent}>
+          <ProfileHeader title="Perfil" showBack showShare={false} onBack={() => setPublicProfileLoading(false)} />
+          <View style={profileStyles.loadingContainer}>
+            <ActivityIndicator />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (selectedAuthorProfile) {
+    if (selectedPublicOccurrence) {
+      return (
+        <OccurrenceDetails
+          occurrence={selectedPublicOccurrence}
+          isSupported={selectedPublicOccurrence.supportedByMe}
+          onBack={() => setSelectedPublicOccurrence(null)}
+        />
+      );
+    }
+
+    return (
+      <SafeAreaView style={profileStyles.container}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={profileStyles.scrollContent}>
+          <ProfileHeader title="Perfil" showBack showShare={false} onBack={() => setSelectedAuthorProfile(null)} />
+
+          <ProfileInfo
+            avatarUrl={publicProfileUser?.image}
+            name={publicProfileUser?.name ?? 'Usuário'}
+            location={formatProfileLocation(publicProfileUser?.city, publicProfileUser?.state)}
+            memberSince={formatProfileMemberSince(publicProfileUser?.createdAt)}
+          />
+
+          <View style={profileStyles.statsContainer}>
+            <StatCard number={String(selectedAuthorProfile.stats.occurrences)} label="OCORRÊNCIAS" />
+            <StatCard number={String(selectedAuthorProfile.stats.supports)} label="APOIOS" />
+          </View>
+
+          <View style={profileStyles.sectionContainer}>
+            <View style={profileStyles.sectionHeader}>
+              <Text style={profileStyles.sectionTitle}>Ocorrências</Text>
+              {hasMorePublicOccurrences ? (
+                <TouchableOpacity onPress={() => setShowAllPublicOccurrences((currentValue) => !currentValue)}>
+                  <Text style={profileStyles.seeAllText}>
+                    {showAllPublicOccurrences ? 'Ver menos' : 'Ver tudo'}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+
+            {visiblePublicOccurrences.length ? (
+              visiblePublicOccurrences.map((profileOccurrence) => (
+                <OccurrenceCard
+                  key={profileOccurrence.id}
+                  imageUrl={profileOccurrence.photos[0]}
+                  title={profileOccurrence.title}
+                  subtitle={`${formatOccurrenceTimeAgo(profileOccurrence.createdAt)} • ${profileOccurrence.category}`}
+                  status={profileStatusLabels[profileOccurrence.status]}
+                  onPress={() => setSelectedPublicOccurrence(profileOccurrenceToDetails(profileOccurrence))}
+                />
+              ))
+            ) : (
+              <Text style={profileStyles.emptyStateText}>Nenhuma ocorrência criada por este usuário.</Text>
+            )}
+          </View>
+
+          <View style={profileStyles.bottomSpacer} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -390,13 +579,24 @@ export function OccurrenceDetails({
 
             return (
               <View key={comment.id} style={styles.commentCard}>
-                {comment.author?.image ? (
-                  <Image source={{ uri: comment.author.image }} style={styles.avatarImage} />
-                ) : (
-                  <View style={styles.avatarInitials}>
-                    <Text style={styles.avatarInitialsText}>{initials}</Text>
-                  </View>
-                )}
+                <TouchableOpacity
+                  onPress={() => {
+                    void handleOpenAuthorProfile({
+                      id: comment.author.id,
+                      name: authorName,
+                      image: comment.author.image,
+                    });
+                  }}
+                  activeOpacity={0.75}
+                >
+                  {comment.author?.image ? (
+                    <Image source={{ uri: comment.author.image }} style={styles.avatarImage} />
+                  ) : (
+                    <View style={styles.avatarInitials}>
+                      <Text style={styles.avatarInitialsText}>{initials}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
                 <View style={styles.commentBubble}>
                   <View style={styles.commentHeader}>
                     <Text style={styles.commentAuthor}>{authorName}</Text>

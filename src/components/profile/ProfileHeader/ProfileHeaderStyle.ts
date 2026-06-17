@@ -13,4 +13,8 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: palette.black,
     },
+    headerSide: {
+        width: 24,
+        height: 24,
+    },
 });
