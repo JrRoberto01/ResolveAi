@@ -1,4 +1,4 @@
-﻿import { Stack } from "expo-router";
+﻿import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { File } from "expo-file-system";
 import React, { useCallback, useState } from "react";
@@ -8,6 +8,7 @@ import Toast from "react-native-toast-message";
 import {
   createOccurrence,
   deleteOccurrence,
+  getOccurrenceCategories,
   getOccurrences,
   toggleOccurrenceSupport,
   updateOccurrence,
@@ -30,22 +31,14 @@ import { spacing } from "../../style/spacing";
 
 type OccurrenceFormProps = {
   initialData?: Ocorrencia | null;
+  categories: string[];
   onAddItem: (item: Ocorrencia) => Promise<void> | void;
   onEditItem: (item: Ocorrencia) => Promise<void> | void;
   onDeleteItem: (id: string) => Promise<void> | void;
   onBack: () => void;
 };
 
-const ALL_CATEGORIES = [
-  "Todos",
-  "Buraco na via",
-  "Iluminação pública",
-  "Lixo / Entulho",
-  "Vazamento",
-  "Alagamento",
-];
-
-const FORM_CATEGORIES = ALL_CATEGORIES.filter((category) => category !== "Todos");
+const ALL_CATEGORY_LABEL = "Todos";
 
 const statusLabels: Record<ApiOccurrence["status"], string> = {
   IN_ANALYSIS: "EM ANÁLISE",
@@ -105,9 +98,25 @@ async function photoToApiUri(uri: string) {
   return `data:image/jpeg;base64,${base64}`;
 }
 
+function getOccurrenceAddress(location: Ocorrencia["location"] | null | undefined) {
+  if (!location) return "";
+  if (typeof location === "string") return location.trim();
+  return (location.address ?? "").trim();
+}
+
+function hasMapLocation(location: Ocorrencia["location"] | null | undefined) {
+  return (
+    !!location &&
+    typeof location === "object" &&
+    typeof location.latitude === "number" &&
+    typeof location.longitude === "number"
+  );
+}
+
 async function cardToPayload(item: Ocorrencia): Promise<OccurrencePayload> {
   const location = typeof item.location === "object" ? item.location : null;
   const photos = await Promise.all((item.photos ?? []).map(photoToApiUri));
+  const address = getOccurrenceAddress(item.location);
 
   return {
     title: item.title.trim(),
@@ -116,13 +125,14 @@ async function cardToPayload(item: Ocorrencia): Promise<OccurrencePayload> {
     anonymous: item.anonymous ?? false,
     latitude: location?.latitude,
     longitude: location?.longitude,
-    address: location?.address ?? (typeof item.location === "string" ? item.location : undefined),
+    address,
     photos,
   };
 }
 
 function OccurrenceForm({
   initialData,
+  categories,
   onAddItem,
   onEditItem,
   onDeleteItem,
@@ -131,7 +141,7 @@ function OccurrenceForm({
   const isEditing = !!initialData;
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [category, setCategory] = useState(initialData?.category ?? FORM_CATEGORIES[0]);
+  const [category, setCategory] = useState(initialData?.category ?? categories[0] ?? "");
   const [isAnonymous, setIsAnonymous] = useState(initialData?.anonymous ?? false);
   const [location, setLocation] = useState<any>(initialData?.location ?? null);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -143,9 +153,36 @@ function OccurrenceForm({
     setCameraOpen(false);
   }
 
+  React.useEffect(() => {
+    if (!category && categories.length > 0) {
+      setCategory(categories[0]);
+      return;
+    }
+
+    if (category && categories.length > 0 && !categories.includes(category)) {
+      setCategory(categories[0]);
+    }
+  }, [categories, category]);
+
   async function handleSave() {
     if (!title.trim()) {
       Toast.show({ type: "error", text1: "Informe um título" });
+      return;
+    }
+
+    if (!category) {
+      Toast.show({ type: "error", text1: "Selecione uma categoria" });
+      return;
+    }
+
+    const selectedLocation = location ?? initialData?.location;
+
+    if (!hasMapLocation(selectedLocation)) {
+      Toast.show({
+        type: "error",
+        text1: "Marque o local no mapa",
+        text2: "Toque no mapa ou use sua localização atual.",
+      });
       return;
     }
 
@@ -159,7 +196,7 @@ function OccurrenceForm({
           description,
           category,
           anonymous: isAnonymous,
-          location: location ?? initialData.location,
+          location: selectedLocation,
           photos,
           imageUrl: photos.length > 0 ? { uri: photos[0] } : initialData.imageUrl,
         });
@@ -172,7 +209,7 @@ function OccurrenceForm({
         description,
         category,
         anonymous: isAnonymous,
-        location: location ?? "Avenida Fictícia, 123",
+        location: selectedLocation,
         likes: 0,
         comments: 0,
         timeAgo: "Agora mesmo",
@@ -230,7 +267,7 @@ function OccurrenceForm({
 
         <CategorySelector
           label="Categoria"
-          categories={FORM_CATEGORIES}
+          categories={categories}
           activeCategory={category}
           onSelect={setCategory}
         />
@@ -268,8 +305,9 @@ function OccurrenceForm({
 
 export default function Index() {
   const [listItems, setListItems] = useState<Ocorrencia[]>([]);
+  const [occurrenceCategories, setOccurrenceCategories] = useState<string[]>([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES[0]);
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_LABEL);
   const [editingItem, setEditingItem] = useState<Ocorrencia | null>(null);
   const [selectedItem, setSelectedItem] = useState<Ocorrencia | null>(null);
   const [searchText, setSearchText] = useState("");
@@ -284,7 +322,7 @@ export default function Index() {
 
       const data = await getOccurrences({
         search: searchText.trim() || undefined,
-        category: activeCategory === ALL_CATEGORIES[0] ? undefined : activeCategory,
+        category: activeCategory === ALL_CATEGORY_LABEL ? undefined : activeCategory,
       });
 
       setListItems(data.map(apiOccurrenceToCard));
@@ -303,6 +341,32 @@ export default function Index() {
   React.useEffect(() => {
     void loadOccurrences();
   }, [loadOccurrences]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    async function loadCategories() {
+      try {
+        const categories = await getOccurrenceCategories();
+
+        if (isMounted) {
+          setOccurrenceCategories(categories);
+        }
+      } catch (err: any) {
+        Toast.show({
+          type: "error",
+          text1: "Erro ao carregar categorias",
+          text2: err?.friendlyMessage || err?.message,
+        });
+      }
+    }
+
+    void loadCategories();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleAddItem(newItem: Ocorrencia) {
     try {
@@ -382,6 +446,13 @@ export default function Index() {
     );
   }, []);
 
+  const handleOccurrenceChange = useCallback((updatedItem: Ocorrencia) => {
+    setListItems((currentItems) =>
+      currentItems.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+    );
+    setSelectedItem((currentItem) => (currentItem?.id === updatedItem.id ? updatedItem : currentItem));
+  }, []);
+
   if (selectedItem) {
     return (
       <View style={{ flex: 1, backgroundColor: globalStyles.container.backgroundColor }}>
@@ -393,6 +464,7 @@ export default function Index() {
             void handleToggleSupport(selectedItem);
           }}
           onCommentCountChange={handleCommentCountChange}
+          onOccurrenceChange={handleOccurrenceChange}
         />
         <StatusBar style="auto" />
         <Toast position="top" bottomOffset={20} />
@@ -405,6 +477,7 @@ export default function Index() {
       <View style={{ flex: 1, backgroundColor: globalStyles.container.backgroundColor }}>
         <OccurrenceForm
           initialData={editingItem}
+          categories={occurrenceCategories}
           onAddItem={handleAddItem}
           onEditItem={handleEditItem}
           onDeleteItem={handleDeleteItem}
@@ -422,7 +495,11 @@ export default function Index() {
   return (
     <View style={{ flex: 1, backgroundColor: globalStyles.container.backgroundColor }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <Header title="Resolve Ai" showNotification />
+      <Header
+        title="Resolve Aí"
+        showNotification
+        onNotificationPress={() => router.push("/(tabs)/notifications")}
+      />
 
       <View style={{ padding: spacing.md, paddingBottom: 0 }}>
         <SearchBar
@@ -432,7 +509,7 @@ export default function Index() {
         />
         <CategorySelector
           horizontal
-          categories={ALL_CATEGORIES}
+          categories={[ALL_CATEGORY_LABEL, ...occurrenceCategories]}
           activeCategory={activeCategory}
           onSelect={setActiveCategory}
         />

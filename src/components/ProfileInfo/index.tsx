@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Ionicons } from '@expo/vector-icons';
 import palette from '@/style/colors';
-import { styles } from '@/style/profile_style';
+import { styles } from './ProfileInfoStyle';
 
 type ProfileInfoProps = {
     avatarUrl?: string | null;

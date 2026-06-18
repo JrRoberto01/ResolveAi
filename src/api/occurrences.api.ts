@@ -113,6 +113,11 @@ export type OccurrenceRanking = {
   }>;
 };
 
+export async function getOccurrenceCategories() {
+  const { data } = await api.get<string[]>('/occurrences/categories');
+  return data;
+}
+
 export async function getOccurrences(filters?: OccurrenceFilters) {
   const { data } = await api.get<ApiOccurrence[]>('/occurrences', {
     params: filters,

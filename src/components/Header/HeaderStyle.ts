@@ -21,6 +21,24 @@ export const styles = StyleSheet.create({
   },
   iconButton: {
     padding: spacing.xs,
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.error,
+  },
+  notificationBadgeText: {
+    color: colors.surface,
+    fontSize: 10,
+    fontWeight: '700',
   },
   iconSpacer: {
     width: 32,

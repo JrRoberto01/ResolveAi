@@ -1,5 +1,6 @@
 ﻿import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import {
@@ -142,6 +143,13 @@ export default function Favorites() {
     );
   }, []);
 
+  const handleOccurrenceChange = useCallback((updatedItem: Ocorrencia) => {
+    setFavorites((currentItems) =>
+      currentItems.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+    );
+    setSelectedItem((currentItem) => (currentItem?.id === updatedItem.id ? updatedItem : currentItem));
+  }, []);
+
   if (selectedItem) {
     return (
       <View style={styles.container}>
@@ -153,6 +161,7 @@ export default function Favorites() {
             void handleToggleSupport(selectedItem);
           }}
           onCommentCountChange={handleCommentCountChange}
+          onOccurrenceChange={handleOccurrenceChange}
         />
         <StatusBar style="auto" />
         <Toast position="top" bottomOffset={20} />
@@ -162,7 +171,13 @@ export default function Favorites() {
 
   return (
     <View style={styles.container}>
-      <Header title="Favoritos" showBack showNotification />
+      <Header
+        title="Favoritos"
+        showBack
+        onBack={() => router.back()}
+        showNotification
+        onNotificationPress={() => router.push('/(tabs)/notifications')}
+      />
 
       <View style={styles.filtersContainer}>
         <SearchBar

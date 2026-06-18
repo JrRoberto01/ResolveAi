@@ -420,6 +420,16 @@ export default function Ranking() {
 		);
 	}, []);
 
+	const handleOccurrenceChange = useCallback((updatedOccurrence: Ocorrencia) => {
+		setSelectedOccurrence((currentOccurrence) =>
+			currentOccurrence?.id === updatedOccurrence.id ? updatedOccurrence : currentOccurrence,
+		);
+
+		if (userLocation) {
+			void loadRanking(false, userLocation);
+		}
+	}, [loadRanking, userLocation]);
+
 	if (selectedOccurrence) {
 		return (
 			<View style={{ flex: 1, backgroundColor: globalStyles.container.backgroundColor }}>
@@ -431,6 +441,7 @@ export default function Ranking() {
 						void handleToggleSelectedSupport();
 					}}
 					onCommentCountChange={handleCommentCountChange}
+					onOccurrenceChange={handleOccurrenceChange}
 				/>
 				<StatusBar style="auto" />
 				<Toast position="top" bottomOffset={20} />

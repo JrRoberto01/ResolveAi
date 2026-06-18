@@ -19,11 +19,11 @@ import { Camera } from '@/components/Camera';
 import type { Ocorrencia } from '@/components/CardOcorrencia';
 import { Input } from '@/components/Input';
 import { OccurrenceDetails } from '@/components/OccurrenceDetails';
-import { OccurrenceCard } from '@/components/profile/OccurrenceCard';
-import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { ProfileInfo } from '@/components/profile/ProfileInfo';
-import { SettingsOption } from '@/components/profile/SettingsOption';
-import { StatCard } from '@/components/profile/StatCard';
+import { OccurrenceCard } from '@/components/OccurrenceCard';
+import { ProfileHeader } from '@/components/ProfileHeader';
+import { ProfileInfo } from '@/components/ProfileInfo';
+import { SettingsOption } from '@/components/SettingsOption';
+import { StatCard } from '@/components/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { styles } from '../../style/profile_style';
 
@@ -379,6 +379,13 @@ export default function Profile() {
             : currentProfile);
     }, []);
 
+    const handleOccurrenceChange = useCallback((updatedOccurrence: Ocorrencia) => {
+        setSelectedOccurrence((currentOccurrence) =>
+            currentOccurrence?.id === updatedOccurrence.id ? updatedOccurrence : currentOccurrence,
+        );
+        void loadProfile(false);
+    }, [loadProfile]);
+
     const settingsOptions = [
         {
             icon: 'user',
@@ -390,6 +397,7 @@ export default function Profile() {
             icon: 'bell',
             text: 'Notificações',
             showDivider: true,
+            onPress: () => router.push('/(tabs)/notifications'),
         },
         {
             icon: 'lock',
@@ -426,6 +434,7 @@ export default function Profile() {
                         void handleToggleSelectedSupport();
                     }}
                     onCommentCountChange={handleCommentCountChange}
+                    onOccurrenceChange={handleOccurrenceChange}
                 />
                 <Toast position="top" bottomOffset={20} />
             </SafeAreaView>

@@ -1,5 +1,5 @@
 ﻿import "react-native-get-random-values";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Alert } from "react-native";
 import { Header } from '../components/Header';
 import { Input } from '../components/Input';
@@ -11,20 +11,65 @@ import { PhotoUploadBox } from '../components/PhotoUploadBox';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { v4 as uuidv4 } from 'uuid';
+import { getOccurrenceCategories } from '../api/occurrences.api';
 
 export default function AddItem(props: any) {
     const isEditing = !!props.initialData;
 
     const [title, setTitle] = useState(isEditing ? props.initialData.title : '');
     const [description, setDescription] = useState(isEditing ? props.initialData.description : '');
-    const [category, setCategory] = useState(isEditing ? props.initialData.category : 'Buraco na via');
+    const [categories, setCategories] = useState<string[]>([]);
+    const [category, setCategory] = useState(isEditing ? props.initialData.category : '');
     const [isAnonymous, setIsAnonymous] = useState(isEditing ? props.initialData.anonymous : false);
     const [location, setLocation] = useState<any>(isEditing ? props.initialData.location : null);
 
-    const categories = ['Buraco na via', 'Iluminação pública', 'Lixo / Entulho', 'Vazamento', 'Alagamento'];
+    useEffect(() => {
+        let isMounted = true;
+
+        async function loadCategories() {
+            try {
+                const loadedCategories = await getOccurrenceCategories();
+
+                if (isMounted) {
+                    setCategories(loadedCategories);
+                    setCategory((currentCategory) =>
+                        currentCategory && loadedCategories.includes(currentCategory)
+                            ? currentCategory
+                            : loadedCategories[0] || '',
+                    );
+                }
+            } catch {
+                if (isMounted) {
+                    setCategories([]);
+                }
+            }
+        }
+
+        void loadCategories();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    function hasMapLocation(value: any) {
+        return !!value && typeof value === 'object' && typeof value.latitude === 'number' && typeof value.longitude === 'number';
+    }
 
     const handleSave = () => {
         if (!title.trim()) return;
+
+        if (!category) {
+            Alert.alert('Categoria obrigatória', 'Selecione uma categoria para a ocorrência.');
+            return;
+        }
+
+        const selectedLocation = location || props.initialData?.location;
+
+        if (!hasMapLocation(selectedLocation)) {
+            Alert.alert('Local obrigatório', 'Toque no mapa ou use sua localização atual para marcar a ocorrência.');
+            return;
+        }
         
         if (isEditing) {
             props.onEditItem({
@@ -33,7 +78,7 @@ export default function AddItem(props: any) {
                 description,
                 category,
                 anonymous: isAnonymous,
-                location: location || props.initialData.location
+                location: selectedLocation
             });
         } else {
             const newItem = {
@@ -42,7 +87,7 @@ export default function AddItem(props: any) {
                 description,
                 category,
                 anonymous: isAnonymous,
-                location: location || 'Avenida Fictícia, 123', // mock fallback
+                location: selectedLocation,
                 likes: 0,
                 comments: 0,
                 timeAgo: 'Agora mesmo',

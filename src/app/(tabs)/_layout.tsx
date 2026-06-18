@@ -47,6 +47,12 @@ export default function TabLayout() {
                     tabBarIcon: () => <Ionicons name="person-outline" size={24} color={palette.darkGrey} />,
                 }}
             />
+            <Tabs.Screen name="notifications"
+                options={{
+                    href: null,
+                    headerShown: false,
+                }}
+            />
         </Tabs>
     )
 }
