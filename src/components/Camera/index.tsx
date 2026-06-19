@@ -91,7 +91,9 @@ export function Camera({ onCapture, onClose }: CameraComponentProps) {
 
     return (
         <View style={styles.container}>
-            <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
+            <CameraView ref={cameraRef} style={styles.camera} facing={facing} />
+
+            <View style={styles.overlay} pointerEvents="box-none">
                 <View style={styles.topBar}>
                     {onClose ? (
                         <TouchableOpacity style={styles.topButton} onPress={onClose}>
@@ -113,7 +115,7 @@ export function Camera({ onCapture, onClose }: CameraComponentProps) {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </CameraView>
+            </View>
         </View>
     );
 }

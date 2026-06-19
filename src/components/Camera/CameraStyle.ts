@@ -9,6 +9,9 @@ export const styles = StyleSheet.create({
     },
     camera: {
         flex: 1,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
         justifyContent: 'space-between',
     },
     permissionContainer: {
