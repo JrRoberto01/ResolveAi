@@ -38,6 +38,23 @@ const hiddenModalState: ModalState = {
 
 const appLogo = require('../../../assets/images/logo.png');
 
+function isBiometricCancel(error: any) {
+    const code = String(error?.code || error?.name || '').toLowerCase();
+    const message = String(error?.message || '').toLowerCase();
+
+    return (
+        code.includes('cancel') ||
+        code.includes('user_cancel') ||
+        code.includes('system_cancel') ||
+        message.includes('cancel') ||
+        message.includes('cancelado') ||
+        message.includes('canceled') ||
+        message.includes('cancelled') ||
+        message.includes('user interaction is required') ||
+        message.includes('authentication was canceled')
+    );
+}
+
 export default function Signin() {
     const {
         isAuthenticated,
@@ -170,6 +187,11 @@ export default function Signin() {
             await signInWithBiometrics();
             navigateToTabs();
         } catch (err: any) {
+            if (isBiometricCancel(err)) {
+                resumeAuthRedirect();
+                return;
+            }
+
             const msg = err?.message || 'Não foi possível entrar com biometria.';
             showErrorModal(msg);
         } finally {
@@ -200,6 +222,11 @@ export default function Signin() {
                 resumeAuthRedirect();
                 router.replace('/(tabs)');
             } catch (err: any) {
+                if (isBiometricCancel(err)) {
+                    resumeAuthRedirect();
+                    return;
+                }
+
                 resumeAuthRedirect();
                 setModal({
                     visible: true,

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import palette from '@/style/colors';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     profileInfoContainer: {
@@ -17,6 +17,21 @@ export const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: palette.white,
     },
+    avatarInitials: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: palette.white,
+        backgroundColor: '#E0F2FE',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    avatarInitialsText: {
+        color: '#0369A1',
+        fontSize: 32,
+        fontWeight: '700',
+    },
     cameraIconBadge: {
         position: 'absolute',
         bottom: 2,
@@ -24,11 +39,11 @@ export const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        backgroundColor: '#0066CC',
+        backgroundColor: palette.darkBlue,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#FFFFFF',
+        borderColor: palette.white,
     },
     userName: {
         fontSize: 22,
@@ -42,9 +57,9 @@ export const styles = StyleSheet.create({
         marginBottom: 4,
     },
     locationText: {
+        marginLeft: 6,
         fontSize: 14,
         color: '#64748b',
-        marginLeft: 6,
     },
     memberSinceText: {
         fontSize: 12,

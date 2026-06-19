@@ -50,6 +50,49 @@ export const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 2,
     },
+    loadingContainer: {
+        minHeight: 220,
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
+    },
+    avatarStatusText: {
+        marginTop: -16,
+        marginBottom: 16,
+        textAlign: 'center' as const,
+        color: '#64748b',
+        fontSize: 12,
+    },
+    editProfileContainer: {
+        marginBottom: 24,
+    },
+    editProfileTitle: {
+        fontSize: 16,
+        fontWeight: '700' as const,
+        color: palette.black,
+        marginBottom: 12,
+    },
+    editProfileActions: {
+        flexDirection: 'row' as const,
+        gap: 12,
+    },
+    editProfileWarningText: {
+        color: '#B45309',
+        fontSize: 12,
+        marginTop: -8,
+        marginBottom: 12,
+    },
+    editProfileButton: {
+        flex: 1,
+    },
+    emptyStateText: {
+        color: '#64748b',
+        fontSize: 14,
+        textAlign: 'center' as const,
+        paddingVertical: 16,
+    },
+    bottomSpacer: {
+        height: 30,
+    },
 
     // ProfileInfo
     profileInfoContainer: {
@@ -66,6 +109,21 @@ export const styles = StyleSheet.create({
         borderRadius: 50,
         borderWidth: 3,
         borderColor: palette.white,
+    },
+    avatarInitials: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: palette.white,
+        backgroundColor: '#E0F2FE',
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
+    },
+    avatarInitialsText: {
+        color: '#0369A1',
+        fontSize: 32,
+        fontWeight: '700' as const,
     },
     cameraIconBadge: {
         position: 'absolute' as const,

@@ -1,4 +1,4 @@
-﻿import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
@@ -6,14 +6,22 @@ import MapView, { Marker } from 'react-native-maps';
 import { colors } from '../../style/colors';
 import { styles } from './LocationPickerStyle';
 
+type SelectedLocation = {
+    latitude: number;
+    longitude: number;
+    address?: string;
+};
+
 interface LocationPickerProps {
-    onLocationSelect: (location: { latitude: number; longitude: number; address?: string }) => void;
-    initialLocation?: { latitude: number; longitude: number; address?: string };
+    onLocationSelect: (location: SelectedLocation) => void;
+    initialLocation?: string | SelectedLocation;
 }
 
 export function LocationPicker({ onLocationSelect, initialLocation }: LocationPickerProps) {
-    const defaultCoords = initialLocation?.latitude
-        ? initialLocation
+    const initialCoords = typeof initialLocation === 'object' ? initialLocation : null;
+    const initialAddress = typeof initialLocation === 'string' ? initialLocation : initialLocation?.address;
+    const defaultCoords = initialCoords?.latitude
+        ? initialCoords
         : {
               latitude: -22.4044,
               longitude: -43.6633,
@@ -25,9 +33,9 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
         longitudeDelta: 0.05,
     });
     const [markerCoord, setMarkerCoord] = useState<{ latitude: number; longitude: number } | null>(
-        initialLocation?.latitude ? initialLocation : null,
+        initialCoords?.latitude ? initialCoords : null,
     );
-    const [addressText, setAddressText] = useState<string | null>(initialLocation?.address || null);
+    const [addressText, setAddressText] = useState(initialAddress || '');
 
     const getAddressFromCoords = async (coord: { latitude: number; longitude: number }) => {
         try {
@@ -61,7 +69,7 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
             const { status } = await Location.requestForegroundPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert('Permissão negada', 'Precisamos da permissão de localização para obter o seu local atual.');
+                Alert.alert('Permissao negada', 'Precisamos da permissao de localizacao para obter o seu local atual.');
                 return;
             }
 
@@ -82,7 +90,7 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
             setAddressText(address);
             onLocationSelect({ ...coord, address });
         } catch {
-            Alert.alert('Erro', 'Não foi possível obter a localização atual.');
+            Alert.alert('Erro', 'Nao foi possivel obter a localizacao atual.');
         }
     };
 
@@ -105,7 +113,9 @@ export function LocationPicker({ onLocationSelect, initialLocation }: LocationPi
                     {markerCoord ? <Marker coordinate={markerCoord} /> : null}
                 </MapView>
             </View>
-            <Text style={styles.hint}>{addressText ? `Local: ${addressText}` : 'Toque no mapa para marcar o local exato.'}</Text>
+            <Text style={styles.hint}>
+                {addressText ? `Endereco: ${addressText}` : 'Toque no mapa para marcar o local da ocorrencia.'}
+            </Text>
         </View>
     );
 }
