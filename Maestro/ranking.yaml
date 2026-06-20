@@ -1,0 +1,16 @@
+appId: com.anonymous.resolveAi
+---
+- launchApp:
+    clearState: true
+
+- tapOn: "Digite seu e-mail"
+- inputText: "teste@teste.com"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Fazer Login"
+
+- tapOn: ", Ranking"
+
+- scroll
+- scroll
+- scroll

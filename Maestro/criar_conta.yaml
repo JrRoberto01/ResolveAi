@@ -1,0 +1,19 @@
+appId: com.anonymous.resolveAi
+---
+- launchApp:
+    clearState: false
+- tapOn: " Cadastre-se"
+
+- tapOn: "Digite seu nome"
+- inputText: "OutraConta"
+
+- tapOn: "Digite seu e-mail"
+- inputText: "teste04@teste.com"
+- tapOn: "Back"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Back"
+
+- tapOn: "Criar conta"
+
+- tapOn: "Continuar"

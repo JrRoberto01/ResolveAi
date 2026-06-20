@@ -1,0 +1,29 @@
+appId: com.anonymous.resolveAi
+---
+- launchApp:
+    clearState: true
+
+- tapOn: "Digite seu e-mail"
+- inputText: "teste01@teste.com"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Fazer Login"
+
+- tapOn: "Rua sem luz"
+- scroll
+- tapOn: ", Marcar como finalizada"
+- tapOn: "FINALIZAR"
+- tapOn: "Perfil"
+- scroll
+- tapOn: "Sair"
+
+- tapOn: "Digite seu e-mail"
+- inputText: "teste03@teste.com"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Fazer Login"
+- tapOn: ""
+- tapOn: "Ocorrencia resolvida"
+
+
+

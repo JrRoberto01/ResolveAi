@@ -1,0 +1,59 @@
+appId: com.anonymous.resolveAi
+---
+- launchApp:
+    clearState: true
+- tapOn: "Digite seu e-mail"
+- inputText: "teste03@teste.com"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Fazer Login"
+
+- tapOn: ", Perfil"
+
+- tapOn:
+    point: 38%,12%
+
+- tapOn:
+    point: 43%,88%
+
+
+- tapOn: ", Usar foto"
+
+- tapOn: ", Editar Perfil, "
+
+- tapOn:
+    text: "OutraConta"
+    index: 1
+- eraseText: 15
+- inputText: "Outro Nome"
+- tapOn:
+    point: 85%,88%
+
+- tapOn: "Salvar"
+- tapOn: "Salvar"
+
+- scroll
+
+- tapOn: ", Privacidade, "
+- tapOn:
+    point: 5%,34%
+- inputText: "teste123"
+
+- tapOn:
+    point: 5%,44%
+
+- inputText: "outrasenha123"
+
+- tapOn:
+    point: 5%,54%
+
+- inputText: "outrasenha123"
+- tapOn: "Back"
+
+- tapOn: "Salvar"
+
+- tapOn: ", Notificações, "
+
+- tapOn: ", Perfil"
+
+- tapOn: ", Sair"

@@ -1,0 +1,38 @@
+appId: com.anonymous.resolveAi
+---
+- launchApp:
+    clearState: true
+
+- tapOn: "Digite seu e-mail"
+- inputText: "teste01@teste.com"
+- tapOn: "Digite sua senha"
+- inputText: "teste123"
+- tapOn: "Fazer Login"
+
+
+
+- tapOn: ""
+- tapOn: "Ex: Buraco no meio da rua"
+- inputText: "Rua sem luz"
+- tapOn: "Descreva o que está acontecendo e como isso afeta a vizinhança..."
+- inputText: "O poste estourou. Ficou sem luz."
+
+
+- tapOn: "Iluminação Pública"
+
+- tapOn: "Iluminação Pública"
+
+- swipe:
+    direction: UP
+
+- tapOn: ", Tirar foto ou anexar, Máximo 5 fotos (JPG, PNG)"
+- tapOn:
+    point: 43%,88%
+
+- tapOn: ", Usar foto"
+- tapOn: ", Usar atual"
+
+- swipe:
+    direction: UP
+
+- tapOn: "Publicar ocorrência"
